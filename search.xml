@@ -631,38 +631,10 @@
       </tags>
   </entry>
   <entry>
-    <title>我的第一篇博客</title>
-    <url>/2026/03/12/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/</url>
-    <content><![CDATA[<p>这是我用 Hexo 搭建的第一篇博客。</p>
-<p>以后我会在这里记录：</p>
-<ul>
-<li>算法学习</li>
-<li>数学思考</li>
-<li>量化研究</li>
-<li>个人生活</li>
-</ul>
-<h2 id="为什么开始写博客"><a class="markdownIt-Anchor" href="#为什么开始写博客"></a> 为什么开始写博客</h2>
-<p>因为我想把平时零散的学习内容整理下来，形成自己的知识积累。</p>
-<h2 id="以后准备写什么"><a class="markdownIt-Anchor" href="#以后准备写什么"></a> 以后准备写什么</h2>
-<p>我后面会主要写这些内容：</p>
-<ol>
-<li>算法与数据结构</li>
-<li>本科数学</li>
-<li>量化交易</li>
-<li>一些技术和生活随笔</li>
-</ol>
-]]></content>
-      <categories>
-        <category>随笔</category>
-      </categories>
-      <tags>
-        <tag>日常</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>P13875 [蓝桥杯 2024 省研究生组] 植物生命力 题解</title>
     <url>/2026/03/15/%E6%A4%8D%E7%89%A9%E7%94%9F%E5%91%BD%E5%8A%9B%E9%A2%98%E8%A7%A3/</url>
-    <content><![CDATA[<span id="more"></span>
+    <content><![CDATA[<p>给定一棵有根树，统计每个点子树内值更小且不能整除当前点权值的后代数量之和，做法是 dsu on tree 配合树状数组与约数枚举。</p>
+<span id="more"></span>
 <h2 id="形式化题意"><a class="markdownIt-Anchor" href="#形式化题意"></a> 形式化题意</h2>
 <p>给定一棵有根树 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>T</mi></mrow><annotation encoding="application/x-tex">T</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">T</span></span></span></span>，根为 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>s</mi></mrow><annotation encoding="application/x-tex">s</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">s</span></span></span></span>。</p>
 <p>设 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>S</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">S_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.05764em;">S</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.05764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 为以 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>i</mi></mrow><annotation encoding="application/x-tex">i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathdefault">i</span></span></span></span> 为根的子树点集，求</p>
@@ -789,6 +761,35 @@ s-65,47,-65,47z M834 80H400000v40H845z'/></svg></span></span></span><span class=
         <tag>树上启发式合并</tag>
         <tag>dsu on tree</tag>
         <tag>树</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>我的第一篇博客</title>
+    <url>/2026/03/12/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/</url>
+    <content><![CDATA[<p>这是我用 Hexo 搭建的第一篇博客。</p>
+<p>以后我会在这里记录：</p>
+<ul>
+<li>算法学习</li>
+<li>数学思考</li>
+<li>量化研究</li>
+<li>个人生活</li>
+</ul>
+<h2 id="为什么开始写博客"><a class="markdownIt-Anchor" href="#为什么开始写博客"></a> 为什么开始写博客</h2>
+<p>因为我想把平时零散的学习内容整理下来，形成自己的知识积累。</p>
+<h2 id="以后准备写什么"><a class="markdownIt-Anchor" href="#以后准备写什么"></a> 以后准备写什么</h2>
+<p>我后面会主要写这些内容：</p>
+<ol>
+<li>算法与数据结构</li>
+<li>本科数学</li>
+<li>量化交易</li>
+<li>一些技术和生活随笔</li>
+</ol>
+]]></content>
+      <categories>
+        <category>随笔</category>
+      </categories>
+      <tags>
+        <tag>日常</tag>
       </tags>
   </entry>
 </search>
