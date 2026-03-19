@@ -30,6 +30,425 @@
       </tags>
   </entry>
   <entry>
+    <title>树链剖分入门详解：把树上路径问题转成区间问题</title>
+    <url>/2026/03/13/%E6%A0%91%E9%93%BE%E5%89%96%E5%88%86%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B/</url>
+    <content><![CDATA[<h1 id="树链剖分入门详解把树上路径问题转成区间问题"><a class="markdownIt-Anchor" href="#树链剖分入门详解把树上路径问题转成区间问题"></a> 树链剖分入门详解：把树上路径问题转成区间问题</h1>
+<p>树上问题里，有一类题非常常见：</p>
+<ul>
+<li>查询两点路径上的信息</li>
+<li>修改两点路径上的信息</li>
+<li>查询某个点的子树信息</li>
+<li>修改某个点的子树信息</li>
+</ul>
+<p>如果暴力做，每次沿着树一路跳，复杂度往往很高。<br />
+而树链剖分的核心，就是把树上的操作，尽量转化成若干个连续区间操作，然后交给线段树之类的数据结构处理。</p>
+<p>它是竞赛里非常经典的一套工具。</p>
+<p>这篇文章尽量把它讲清楚：</p>
+<ol>
+<li>树链剖分到底在干什么</li>
+<li>两次 DFS 分别求什么</li>
+<li>为什么路径会被拆成若干段区间</li>
+<li>怎么做路径查询、路径修改、子树查询</li>
+<li>最后给一个完整代码模板</li>
+</ol>
+<h1 id="一-树链剖分到底是什么"><a class="markdownIt-Anchor" href="#一-树链剖分到底是什么"></a> 一、树链剖分到底是什么</h1>
+<p>先说一句最本质的话：</p>
+<blockquote>
+<p>树链剖分，就是把一棵树剖成若干条链，再把这些链映射到序列上。</p>
+</blockquote>
+<p>这样，树上的路径问题，就能变成序列上的区间问题。</p>
+<p>比如原来题目问：</p>
+<ul>
+<li>查询点 <code>u</code> 到点 <code>v</code> 路径上的点权和</li>
+</ul>
+<p>经过树链剖分后，就会变成：</p>
+<ul>
+<li>查询若干段区间的和</li>
+</ul>
+<p>然后这些区间交给线段树处理即可。</p>
+<h1 id="二-为什么要重链和轻链"><a class="markdownIt-Anchor" href="#二-为什么要重链和轻链"></a> 二、为什么要“重链”和“轻链”</h1>
+<p>树链剖分不是随便把树切成链，而是按一种特别的方式切：</p>
+<ul>
+<li>每个点选一个“最重要”的儿子，叫重儿子</li>
+<li>这条连向重儿子的边，叫重边</li>
+<li>其他儿子的边，叫轻边</li>
+<li>由重边连起来的一条链，叫重链</li>
+</ul>
+<p>那么问题来了：为什么这样选？</p>
+<p>答案是：为了让一条树上路径经过的链数尽量少。</p>
+<h2 id="21-重儿子怎么选"><a class="markdownIt-Anchor" href="#21-重儿子怎么选"></a> 2.1 重儿子怎么选</h2>
+<p>对于每个点 <code>u</code>，它的重儿子定义为：</p>
+<blockquote>
+<p>子树大小最大的那个儿子。</p>
+</blockquote>
+<p>也就是 <code>siz[v]</code> 最大的儿子 <code>v</code>。</p>
+<h2 id="22-这样选有什么好处"><a class="markdownIt-Anchor" href="#22-这样选有什么好处"></a> 2.2 这样选有什么好处</h2>
+<p>关键性质：</p>
+<blockquote>
+<p>从任意点往上走到根，经过的轻边数量是 <code>O(log n)</code> 的。</p>
+</blockquote>
+<p>为什么？</p>
+<p>因为一旦走一条轻边，说明你没有走向父亲的重儿子。<br />
+设当前点是 <code>u</code>，它的父亲是 <code>fa[u]</code>。</p>
+<p>由于 <code>u</code> 不是重儿子，所以父亲的重儿子子树大小至少和 <code>u</code> 一样大，于是有：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">siz[u] &lt;= siz[fa[u]] / 2</span><br></pre></td></tr></table></figure>
+<p>也就是说，每经过一条轻边，子树大小至少翻倍。<br />
+子树大小最多到 <code>n</code>，所以轻边数量最多 <code>log n</code> 条。</p>
+<p>这就意味着：</p>
+<blockquote>
+<p>任意两点路径，被拆成的链段数量是 <code>O(log n)</code> 级别的。</p>
+</blockquote>
+<p>这就是树链剖分高效的根源。</p>
+<h1 id="三-树链剖分维护哪些数组"><a class="markdownIt-Anchor" href="#三-树链剖分维护哪些数组"></a> 三、树链剖分维护哪些数组</h1>
+<p>树链剖分通常会维护下面这些信息：</p>
+<ul>
+<li><code>fa[u]</code>：父亲</li>
+<li><code>dep[u]</code>：深度</li>
+<li><code>siz[u]</code>：子树大小</li>
+<li><code>son[u]</code>：重儿子</li>
+<li><code>top[u]</code>：<code>u</code> 所在重链的链顶</li>
+<li><code>dfn[u]</code>：<code>u</code> 在线性序列中的编号</li>
+<li><code>rnk[i]</code>：编号 <code>i</code> 对应的原节点是谁</li>
+</ul>
+<p>这些量里，最关键的是：</p>
+<ul>
+<li><code>son[u]</code> 决定重链结构</li>
+<li><code>top[u]</code> 决定链顶</li>
+<li><code>dfn[u]</code> 决定怎么映射到序列上</li>
+</ul>
+<h1 id="四-两次-dfs-分别做什么"><a class="markdownIt-Anchor" href="#四-两次-dfs-分别做什么"></a> 四、两次 DFS 分别做什么</h1>
+<p>树链剖分核心就是两次 DFS。</p>
+<h2 id="41-第一次-dfs求基础信息"><a class="markdownIt-Anchor" href="#41-第一次-dfs求基础信息"></a> 4.1 第一次 DFS：求基础信息</h2>
+<p>第一遍 DFS 一般做这些事：</p>
+<ul>
+<li>求 <code>fa[u]</code></li>
+<li>求 <code>dep[u]</code></li>
+<li>求 <code>siz[u]</code></li>
+<li>求 <code>son[u]</code></li>
+</ul>
+<p>也就是先把“谁是重儿子”这件事确定下来。</p>
+<p>伪代码如下：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">dfs1(u, father):</span><br><span class="line">    fa[u] = father</span><br><span class="line">    dep[u] = dep[father] + 1</span><br><span class="line">    siz[u] = 1</span><br><span class="line">    son[u] = 0</span><br><span class="line"></span><br><span class="line">    for v in 邻接点:</span><br><span class="line">        if v == father:</span><br><span class="line">            continue</span><br><span class="line">        dfs1(v, u)</span><br><span class="line">        siz[u] += siz[v]</span><br><span class="line">        if siz[v] &gt; siz[son[u]]:</span><br><span class="line">            son[u] = v</span><br></pre></td></tr></table></figure>
+<p>这里 <code>son[u] = v</code> 的含义就是：</p>
+<ul>
+<li><code>v</code> 是 <code>u</code> 的重儿子</li>
+</ul>
+<h2 id="42-第二次-dfs给每个点编号并确定链顶"><a class="markdownIt-Anchor" href="#42-第二次-dfs给每个点编号并确定链顶"></a> 4.2 第二次 DFS：给每个点编号并确定链顶</h2>
+<p>第二遍 DFS 主要做：</p>
+<ul>
+<li>确定每个点的 <code>top[u]</code></li>
+<li>确定每个点的 <code>dfn[u]</code></li>
+<li>建立 <code>rnk[dfn[u]] = u</code></li>
+</ul>
+<p>伪代码：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">dfs2(u, t):</span><br><span class="line">    top[u] = t</span><br><span class="line">    dfn[u] = ++timer</span><br><span class="line">    rnk[timer] = u</span><br><span class="line"></span><br><span class="line">    if son[u] != 0:</span><br><span class="line">        dfs2(son[u], t)</span><br><span class="line"></span><br><span class="line">    for v in 邻接点:</span><br><span class="line">        if v == fa[u] or v == son[u]:</span><br><span class="line">            continue</span><br><span class="line">        dfs2(v, v)</span><br></pre></td></tr></table></figure>
+<p>这里最关键的是：</p>
+<ul>
+<li>如果走重儿子，那么链顶 <code>top</code> 不变</li>
+<li>如果走轻儿子，那么它自己成为新链的链顶</li>
+</ul>
+<h1 id="五-为什么子树会对应一个连续区间"><a class="markdownIt-Anchor" href="#五-为什么子树会对应一个连续区间"></a> 五、为什么子树会对应一个连续区间</h1>
+<p>这是树链剖分里一个特别好用的性质。</p>
+<p>因为第二次 DFS 编号时，我们总是先访问当前点，再优先一路走重儿子，然后递归别的儿子。<br />
+所以整棵子树在 <code>dfn</code> 序里一定是连续的一段。</p>
+<p>也就是说：</p>
+<blockquote>
+<p>点 <code>u</code> 的整棵子树，对应区间 <code>[dfn[u], dfn[u] + siz[u] - 1]</code></p>
+</blockquote>
+<p>这就很方便了。</p>
+<p>所以：</p>
+<ul>
+<li>子树查询 -&gt; 线段树区间查询</li>
+<li>子树修改 -&gt; 线段树区间修改</li>
+</ul>
+<h1 id="六-路径查询为什么能拆成若干段区间"><a class="markdownIt-Anchor" href="#六-路径查询为什么能拆成若干段区间"></a> 六、路径查询为什么能拆成若干段区间</h1>
+<p>这是树链剖分最核心的操作。</p>
+<p>假设我们要查询 <code>u</code> 到 <code>v</code> 的路径。</p>
+<p>如果 <code>u</code> 和 <code>v</code> 在同一条重链上，那就简单了：</p>
+<ul>
+<li>直接变成区间 <code>[dfn[u], dfn[v]]</code></li>
+</ul>
+<p>如果不在同一条链上怎么办？</p>
+<p>那就让链顶更深的那个点先往上跳。</p>
+<p>因为：</p>
+<ul>
+<li><code>top[u]</code> 表示 <code>u</code> 所在链的链顶</li>
+<li><code>top[v]</code> 表示 <code>v</code> 所在链的链顶</li>
+</ul>
+<p>若 <code>top[u] != top[v]</code>，说明它们不在同一条重链。</p>
+<p>我们比较：</p>
+<ul>
+<li><code>dep[top[u]]</code></li>
+<li><code>dep[top[v]]</code></li>
+</ul>
+<p>谁更深，谁先处理。</p>
+<p>比如 <code>dep[top[u]] &gt; dep[top[v]]</code>，说明 <code>u</code> 这边链顶更深，<br />
+那么 <code>u</code> 到 <code>top[u]</code> 这一整段一定都在答案路径里。</p>
+<p>于是可以先处理区间：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">[dfn[top[u]], dfn[u]]</span><br></pre></td></tr></table></figure>
+<p>然后让：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">u = fa[top[u]]</span><br></pre></td></tr></table></figure>
+<p>也就是直接跳到这条链上面去。</p>
+<p>重复这个过程，直到两点进入同一条链。</p>
+<p>最后再处理同链部分：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">[dfn[u], dfn[v]]</span><br></pre></td></tr></table></figure>
+<h1 id="七-路径查询的过程演示"><a class="markdownIt-Anchor" href="#七-路径查询的过程演示"></a> 七、路径查询的过程演示</h1>
+<p>假设有这样一棵树：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">     1</span><br><span class="line">   /   \</span><br><span class="line">  2     3</span><br><span class="line"> / \   / \</span><br><span class="line">4   5 6   7</span><br><span class="line">   /</span><br><span class="line">  8</span><br></pre></td></tr></table></figure>
+<p>如果重儿子按子树大小选，可能会形成若干条重链。</p>
+<p>现在我们要查询 <code>8 -&gt; 7</code> 的路径。</p>
+<p>它不会一次变成一个区间，<br />
+而是拆成类似下面几段：</p>
+<ul>
+<li><code>8 -&gt; 5</code> 所在链的一段</li>
+<li>再跳到 <code>2</code></li>
+<li>然后跳到 <code>1</code></li>
+<li>再处理 <code>1 -&gt; 3 -&gt; 7</code> 那边的一段</li>
+</ul>
+<p>最终路径被拆成若干条链上的连续区间。</p>
+<p>这就是树链剖分的本质：</p>
+<blockquote>
+<p>树上不连续，链上连续；路径整体不连续，但能拆成少量连续段。</p>
+</blockquote>
+<h1 id="八-常见操作怎么写"><a class="markdownIt-Anchor" href="#八-常见操作怎么写"></a> 八、常见操作怎么写</h1>
+<p>下面只讲思路，不先上代码。</p>
+<h2 id="81-路径查询"><a class="markdownIt-Anchor" href="#81-路径查询"></a> 8.1 路径查询</h2>
+<p>例如：</p>
+<ul>
+<li>查询 <code>u</code> 到 <code>v</code> 路径点权和</li>
+<li>查询 <code>u</code> 到 <code>v</code> 路径最大值</li>
+</ul>
+<p>做法：</p>
+<ol>
+<li>当 <code>top[u] != top[v]</code> 时，不断处理更深链顶那一侧的整段区间</li>
+<li>当 <code>top[u] == top[v]</code> 时，处理最后同链区间</li>
+</ol>
+<p>复杂度：</p>
+<ul>
+<li>每次跳链 <code>O(log n)</code> 次</li>
+<li>每次区间查询若用线段树是 <code>O(log n)</code></li>
+</ul>
+<p>总复杂度：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">O(log^2 n)</span><br></pre></td></tr></table></figure>
+<h2 id="82-路径修改"><a class="markdownIt-Anchor" href="#82-路径修改"></a> 8.2 路径修改</h2>
+<p>例如：</p>
+<ul>
+<li>给 <code>u</code> 到 <code>v</code> 路径所有点加上 <code>k</code></li>
+<li>给 <code>u</code> 到 <code>v</code> 路径所有点赋值</li>
+</ul>
+<p>思路和路径查询完全一样，<br />
+只不过把“区间查询”改成“区间修改”。</p>
+<p>复杂度仍然是：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">O(log^2 n)</span><br></pre></td></tr></table></figure>
+<h2 id="83-子树查询"><a class="markdownIt-Anchor" href="#83-子树查询"></a> 8.3 子树查询</h2>
+<p>因为子树对应连续区间：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">[dfn[u], dfn[u] + siz[u] - 1]</span><br></pre></td></tr></table></figure>
+<p>所以直接在线段树上查这一段即可。</p>
+<p>复杂度：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">O(log n)</span><br></pre></td></tr></table></figure>
+<h2 id="84-子树修改"><a class="markdownIt-Anchor" href="#84-子树修改"></a> 8.4 子树修改</h2>
+<p>也是同理，直接修改：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">[dfn[u], dfn[u] + siz[u] - 1]</span><br></pre></td></tr></table></figure>
+<p>复杂度：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">O(log n)</span><br></pre></td></tr></table></figure>
+<h1 id="九-点权剖分和边权剖分的区别"><a class="markdownIt-Anchor" href="#九-点权剖分和边权剖分的区别"></a> 九、点权剖分和边权剖分的区别</h1>
+<p>树链剖分常见有两种：</p>
+<ul>
+<li>点权剖分</li>
+<li>边权剖分</li>
+</ul>
+<h2 id="91-点权剖分"><a class="markdownIt-Anchor" href="#91-点权剖分"></a> 9.1 点权剖分</h2>
+<p>最常见。</p>
+<p>每个节点有权值，节点 <code>u</code> 的权值放在线性序列位置 <code>dfn[u]</code> 上。</p>
+<p>路径查询时，区间就是直接对节点编号区间操作。</p>
+<h2 id="92-边权剖分"><a class="markdownIt-Anchor" href="#92-边权剖分"></a> 9.2 边权剖分</h2>
+<p>如果题目是边有权值怎么办？</p>
+<p>常见处理方式是：</p>
+<blockquote>
+<p>把一条边的权值，挂到它更深的那个点上。</p>
+</blockquote>
+<p>比如边 <code>(fa[u], u)</code> 的权值，存到点 <code>u</code> 上。</p>
+<p>这样边权问题就转化成点权问题了。</p>
+<p>但要注意：</p>
+<ul>
+<li>查询路径边权时，LCA 那个点本身不对应边</li>
+<li>所以最后同链那一步，往往要用 <code>[dfn[u] + 1, dfn[v]]</code> 或者根据深度关系小心处理</li>
+</ul>
+<p>这一点特别容易写错。</p>
+<h1 id="十-树链剖分和-lca-的关系"><a class="markdownIt-Anchor" href="#十-树链剖分和-lca-的关系"></a> 十、树链剖分和 LCA 的关系</h1>
+<p>树链剖分也可以顺便求 LCA。</p>
+<p>方法很简单：</p>
+<p>当 <code>top[u] != top[v]</code> 时，不断让链顶更深的点往上跳。<br />
+最后它们进入同一条链，深度更小的那个点就是 LCA。</p>
+<p>代码思路：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">while top[u] != top[v]:</span><br><span class="line">    if dep[top[u]] &lt; dep[top[v]]:</span><br><span class="line">        swap(u, v)</span><br><span class="line">    u = fa[top[u]]</span><br><span class="line"></span><br><span class="line">return dep[u] &lt; dep[v] ? u : v</span><br></pre></td></tr></table></figure>
+<p>复杂度：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">O(log n)</span><br></pre></td></tr></table></figure>
+<h1 id="十一-完整模板点权-路径和-子树和"><a class="markdownIt-Anchor" href="#十一-完整模板点权-路径和-子树和"></a> 十一、完整模板（点权 + 路径和 + 子树和）</h1>
+<p>下面给一个比较常用的模板：</p>
+<ul>
+<li>支持建树</li>
+<li>支持树链剖分</li>
+<li>支持线段树</li>
+<li>支持路径求和</li>
+<li>支持路径加</li>
+<li>支持子树求和</li>
+<li>支持子树加</li>
+</ul>
+<p>这个模板适合作为入门版本。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> int long long</span></span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> N = <span class="number">200005</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> n, m, rt;</span><br><span class="line">vector&lt;<span class="type">int</span>&gt; e[N];</span><br><span class="line"><span class="type">int</span> a[N];</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> fa[N], dep[N], siz[N], son[N];</span><br><span class="line"><span class="type">int</span> top[N], dfn[N], rnk_[N], tot;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">node</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> l, r;</span><br><span class="line">    <span class="type">int</span> sum, add;</span><br><span class="line">&#125; tr[N &lt;&lt; <span class="number">2</span>];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dfs1</span><span class="params">(<span class="type">int</span> u, <span class="type">int</span> f)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    fa[u] = f;</span><br><span class="line">    dep[u] = dep[f] + <span class="number">1</span>;</span><br><span class="line">    siz[u] = <span class="number">1</span>;</span><br><span class="line">    son[u] = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">auto</span> v : e[u])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (v == f)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">dfs1</span>(v, u);</span><br><span class="line">        siz[u] += siz[v];</span><br><span class="line">        <span class="keyword">if</span> (siz[v] &gt; siz[son[u]])</span><br><span class="line">        &#123;</span><br><span class="line">            son[u] = v;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dfs2</span><span class="params">(<span class="type">int</span> u, <span class="type">int</span> tp)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    top[u] = tp;</span><br><span class="line">    dfn[u] = ++tot;</span><br><span class="line">    rnk_[tot] = u;</span><br><span class="line">    <span class="keyword">if</span> (son[u])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">dfs2</span>(son[u], tp);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">auto</span> v : e[u])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (v == fa[u] || v == son[u])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">dfs2</span>(v, v);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">pushup</span><span class="params">(<span class="type">int</span> p)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    tr[p].sum = tr[p &lt;&lt; <span class="number">1</span>].sum + tr[p &lt;&lt; <span class="number">1</span> | <span class="number">1</span>].sum;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">work</span><span class="params">(<span class="type">int</span> p, <span class="type">int</span> k)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    tr[p].sum += (tr[p].r - tr[p].l + <span class="number">1</span>) * k;</span><br><span class="line">    tr[p].add += k;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">pushdown</span><span class="params">(<span class="type">int</span> p)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (tr[p].add)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">work</span>(p &lt;&lt; <span class="number">1</span>, tr[p].add);</span><br><span class="line">        <span class="built_in">work</span>(p &lt;&lt; <span class="number">1</span> | <span class="number">1</span>, tr[p].add);</span><br><span class="line">        tr[p].add = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">build</span><span class="params">(<span class="type">int</span> p, <span class="type">int</span> l, <span class="type">int</span> r)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    tr[p].l = l;</span><br><span class="line">    tr[p].r = r;</span><br><span class="line">    tr[p].add = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (l == r)</span><br><span class="line">    &#123;</span><br><span class="line">        tr[p].sum = a[rnk_[l]];</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> mid = (l + r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">    <span class="built_in">build</span>(p &lt;&lt; <span class="number">1</span>, l, mid);</span><br><span class="line">    <span class="built_in">build</span>(p &lt;&lt; <span class="number">1</span> | <span class="number">1</span>, mid + <span class="number">1</span>, r);</span><br><span class="line">    <span class="built_in">pushup</span>(p);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">modify</span><span class="params">(<span class="type">int</span> p, <span class="type">int</span> l, <span class="type">int</span> r, <span class="type">int</span> k)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (l &lt;= tr[p].l &amp;&amp; tr[p].r &lt;= r)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">work</span>(p, k);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">pushdown</span>(p);</span><br><span class="line">    <span class="type">int</span> mid = (tr[p].l + tr[p].r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span> (l &lt;= mid)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">modify</span>(p &lt;&lt; <span class="number">1</span>, l, r, k);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (r &gt; mid)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">modify</span>(p &lt;&lt; <span class="number">1</span> | <span class="number">1</span>, l, r, k);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">pushup</span>(p);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">query</span><span class="params">(<span class="type">int</span> p, <span class="type">int</span> l, <span class="type">int</span> r)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (l &lt;= tr[p].l &amp;&amp; tr[p].r &lt;= r)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> tr[p].sum;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">pushdown</span>(p);</span><br><span class="line">    <span class="type">int</span> mid = (tr[p].l + tr[p].r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">    <span class="type">int</span> res = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (l &lt;= mid)</span><br><span class="line">    &#123;</span><br><span class="line">        res += <span class="built_in">query</span>(p &lt;&lt; <span class="number">1</span>, l, r);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (r &gt; mid)</span><br><span class="line">    &#123;</span><br><span class="line">        res += <span class="built_in">query</span>(p &lt;&lt; <span class="number">1</span> | <span class="number">1</span>, l, r);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">modify_path</span><span class="params">(<span class="type">int</span> u, <span class="type">int</span> v, <span class="type">int</span> k)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">while</span> (top[u] != top[v])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (dep[top[u]] &lt; dep[top[v]])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">swap</span>(u, v);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">modify</span>(<span class="number">1</span>, dfn[top[u]], dfn[u], k);</span><br><span class="line">        u = fa[top[u]];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (dep[u] &gt; dep[v])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">swap</span>(u, v);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">modify</span>(<span class="number">1</span>, dfn[u], dfn[v], k);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">query_path</span><span class="params">(<span class="type">int</span> u, <span class="type">int</span> v)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> res = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (top[u] != top[v])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (dep[top[u]] &lt; dep[top[v]])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">swap</span>(u, v);</span><br><span class="line">        &#125;</span><br><span class="line">        res += <span class="built_in">query</span>(<span class="number">1</span>, dfn[top[u]], dfn[u]);</span><br><span class="line">        u = fa[top[u]];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (dep[u] &gt; dep[v])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">swap</span>(u, v);</span><br><span class="line">    &#125;</span><br><span class="line">    res += <span class="built_in">query</span>(<span class="number">1</span>, dfn[u], dfn[v]);</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">modify_tree</span><span class="params">(<span class="type">int</span> u, <span class="type">int</span> k)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">modify</span>(<span class="number">1</span>, dfn[u], dfn[u] + siz[u] - <span class="number">1</span>, k);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">query_tree</span><span class="params">(<span class="type">int</span> u)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">query</span>(<span class="number">1</span>, dfn[u], dfn[u] + siz[u] - <span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">signed</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ios::<span class="built_in">sync_with_stdio</span>(<span class="number">0</span>);</span><br><span class="line">    cin.<span class="built_in">tie</span>(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    cin &gt;&gt; n &gt;&gt; m &gt;&gt; rt;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        cin &gt;&gt; a[i];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt; n; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> u, v;</span><br><span class="line">        cin &gt;&gt; u &gt;&gt; v;</span><br><span class="line">        e[u].<span class="built_in">push_back</span>(v);</span><br><span class="line">        e[v].<span class="built_in">push_back</span>(u);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">dfs1</span>(rt, <span class="number">0</span>);</span><br><span class="line">    <span class="built_in">dfs2</span>(rt, rt);</span><br><span class="line">    <span class="built_in">build</span>(<span class="number">1</span>, <span class="number">1</span>, n);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (m--)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> op;</span><br><span class="line">        cin &gt;&gt; op;</span><br><span class="line">        <span class="keyword">if</span> (op == <span class="number">1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="type">int</span> u, v, k;</span><br><span class="line">            cin &gt;&gt; u &gt;&gt; v &gt;&gt; k;</span><br><span class="line">            <span class="built_in">modify_path</span>(u, v, k);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (op == <span class="number">2</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="type">int</span> u, v;</span><br><span class="line">            cin &gt;&gt; u &gt;&gt; v;</span><br><span class="line">            cout &lt;&lt; <span class="built_in">query_path</span>(u, v) &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (op == <span class="number">3</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="type">int</span> u, k;</span><br><span class="line">            cin &gt;&gt; u &gt;&gt; k;</span><br><span class="line">            <span class="built_in">modify_tree</span>(u, k);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="type">int</span> u;</span><br><span class="line">            cin &gt;&gt; u;</span><br><span class="line">            cout &lt;&lt; <span class="built_in">query_tree</span>(u) &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="十二-这个模板该怎么理解"><a class="markdownIt-Anchor" href="#十二-这个模板该怎么理解"></a> 十二、这个模板该怎么理解</h1>
+<p>上面的代码其实就分成三层。</p>
+<h2 id="第一层树的基础信息"><a class="markdownIt-Anchor" href="#第一层树的基础信息"></a> 第一层：树的基础信息</h2>
+<p>这部分是：</p>
+<ul>
+<li><code>dfs1</code></li>
+<li><code>dfs2</code></li>
+</ul>
+<p>负责把树的信息剖出来。</p>
+<h3 id="dfs1"><a class="markdownIt-Anchor" href="#dfs1"></a> <code>dfs1</code></h3>
+<p>求：</p>
+<ul>
+<li>父亲</li>
+<li>深度</li>
+<li>子树大小</li>
+<li>重儿子</li>
+</ul>
+<h3 id="dfs2"><a class="markdownIt-Anchor" href="#dfs2"></a> <code>dfs2</code></h3>
+<p>求：</p>
+<ul>
+<li>链顶</li>
+<li>dfs 序编号</li>
+<li>点和编号的映射</li>
+</ul>
+<h2 id="第二层线段树"><a class="markdownIt-Anchor" href="#第二层线段树"></a> 第二层：线段树</h2>
+<p>线段树维护的是剖分后的序列。</p>
+<p>也就是说：</p>
+<ul>
+<li>第 <code>dfn[u]</code> 个位置，对应原树节点 <code>u</code></li>
+</ul>
+<p>所以建树时：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">tr[p].sum = a[rnk_[l]];</span><br></pre></td></tr></table></figure>
+<p>意思就是：</p>
+<ul>
+<li>线段树位置 <code>l</code></li>
+<li>对应原节点 <code>rnk_[l]</code></li>
+<li>它的点权是 <code>a[rnk_[l]]</code></li>
+</ul>
+<h2 id="第三层树上操作转区间操作"><a class="markdownIt-Anchor" href="#第三层树上操作转区间操作"></a> 第三层：树上操作转区间操作</h2>
+<h3 id="路径修改"><a class="markdownIt-Anchor" href="#路径修改"></a> 路径修改</h3>
+<p><code>modify_path(u, v, k)</code></p>
+<p>不断拆链，拆成若干段区间去修改。</p>
+<h3 id="路径查询"><a class="markdownIt-Anchor" href="#路径查询"></a> 路径查询</h3>
+<p><code>query_path(u, v)</code></p>
+<p>也是不断拆链，把若干段区间答案加起来。</p>
+<h3 id="子树修改"><a class="markdownIt-Anchor" href="#子树修改"></a> 子树修改</h3>
+<p><code>modify_tree(u, k)</code></p>
+<p>直接改：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">[dfn[u], dfn[u] + siz[u] - <span class="number">1</span>]</span><br></pre></td></tr></table></figure>
+<h3 id="子树查询"><a class="markdownIt-Anchor" href="#子树查询"></a> 子树查询</h3>
+<p><code>query_tree(u)</code></p>
+<p>直接查这一段。</p>
+<h1 id="十三-复杂度分析"><a class="markdownIt-Anchor" href="#十三-复杂度分析"></a> 十三、复杂度分析</h1>
+<p>设树有 <code>n</code> 个点。</p>
+<ul>
+<li>预处理两次 DFS：<code>O(n)</code></li>
+<li>建线段树：<code>O(n)</code></li>
+</ul>
+<p>每次路径操作：</p>
+<ul>
+<li>最多跳 <code>O(log n)</code> 条链</li>
+<li>每次线段树操作 <code>O(log n)</code></li>
+</ul>
+<p>所以路径操作复杂度为：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">O(log^2 n)</span><br></pre></td></tr></table></figure>
+<p>每次子树操作：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">O(log n)</span><br></pre></td></tr></table></figure>
+<p>这已经足够应对大多数竞赛题。</p>
+<h1 id="十四-树链剖分最容易错的地方"><a class="markdownIt-Anchor" href="#十四-树链剖分最容易错的地方"></a> 十四、树链剖分最容易错的地方</h1>
+<p>这个部分非常重要。</p>
+<h2 id="141-sonu-可能为-0"><a class="markdownIt-Anchor" href="#141-sonu-可能为-0"></a> 14.1 <code>son[u]</code> 可能为 0</h2>
+<p>叶子节点没有重儿子，所以：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (son[u])</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">dfs2</span>(son[u], tp);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里一定要判一下。</p>
+<h2 id="142-同链最后一步注意深度顺序"><a class="markdownIt-Anchor" href="#142-同链最后一步注意深度顺序"></a> 14.2 同链最后一步注意深度顺序</h2>
+<p>当 <code>top[u] == top[v]</code> 后，要保证 <code>u</code> 更浅：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (dep[u] &gt; dep[v])</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">swap</span>(u, v);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>否则区间左右可能反。</p>
+<h2 id="143-子树区间是-dfnu-~-dfnu-sizu-1"><a class="markdownIt-Anchor" href="#143-子树区间是-dfnu-~-dfnu-sizu-1"></a> 14.3 子树区间是 <code>dfn[u] ~ dfn[u] + siz[u] - 1</code></h2>
+<p>这里非常容易少写 <code>-1</code>。</p>
+<p>正确写法：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">[dfn[u], dfn[u] + siz[u] - <span class="number">1</span>]</span><br></pre></td></tr></table></figure>
+<h2 id="144-边权剖分最后一段常常不一样"><a class="markdownIt-Anchor" href="#144-边权剖分最后一段常常不一样"></a> 14.4 边权剖分最后一段常常不一样</h2>
+<p>如果是边权，不是点权，那么最后同链处理时，通常要排除 LCA 对应那个点。</p>
+<p>这一点一定要分清。</p>
+<h2 id="145-根节点怎么选"><a class="markdownIt-Anchor" href="#145-根节点怎么选"></a> 14.5 根节点怎么选</h2>
+<p>树链剖分本质上要先选根。<br />
+一般题目会指定根，没指定时常设 <code>1</code> 为根。</p>
+<p>不同根会影响：</p>
+<ul>
+<li><code>fa</code></li>
+<li><code>dep</code></li>
+<li><code>siz</code></li>
+<li><code>son</code></li>
+<li><code>top</code></li>
+<li><code>dfn</code></li>
+</ul>
+<p>所以根一旦定了，整套剖分都按这个根来。</p>
+<h1 id="十五-树链剖分适合什么题"><a class="markdownIt-Anchor" href="#十五-树链剖分适合什么题"></a> 十五、树链剖分适合什么题</h1>
+<p>通常看到下面这些关键词，就该想到 HLD：</p>
+<ul>
+<li>树上路径修改 / 查询</li>
+<li>树上子树修改 / 查询</li>
+<li>点权或边权动态维护</li>
+<li>需要支持多次在线操作</li>
+</ul>
+<p>比如：</p>
+<ul>
+<li>查询两点路径和</li>
+<li>查询两点路径最大值</li>
+<li>路径加法</li>
+<li>子树加法</li>
+<li>子树求和</li>
+<li>边权修改、路径最大边权</li>
+</ul>
+<h1 id="十六-什么时候不该用树链剖分"><a class="markdownIt-Anchor" href="#十六-什么时候不该用树链剖分"></a> 十六、什么时候不该用树链剖分</h1>
+<p>也不是所有树题都要上 HLD。</p>
+<p>比如：</p>
+<ul>
+<li>只有一次查询，可以直接暴力或 DFS</li>
+<li>静态离线问题，有更简单做法</li>
+<li>只查 LCA，用倍增更简单</li>
+<li>纯子树静态问题，一个 DFS 序就够了</li>
+</ul>
+<p>所以树链剖分主要适合：</p>
+<blockquote>
+<p>树上多次动态路径/子树操作。</p>
+</blockquote>
+<h1 id="十七-一个最简短的总结"><a class="markdownIt-Anchor" href="#十七-一个最简短的总结"></a> 十七、一个最简短的总结</h1>
+<p>可以把树链剖分记成四句话：</p>
+<ol>
+<li>先用 <code>dfs1</code> 求重儿子</li>
+<li>再用 <code>dfs2</code> 给每个点编号</li>
+<li>子树对应 DFS 序上的连续区间</li>
+<li>路径被拆成若干条重链上的连续区间</li>
+</ol>
+<p>所以它本质就是：</p>
+<blockquote>
+<p>把树上的问题，变成序列上的区间问题。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>数据结构</tag>
+        <tag>树链剖分</tag>
+        <tag>线段树</tag>
+        <tag>图论</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Codeforces 2137G Cry Me a River 题解</title>
     <url>/2026/03/13/cf2137g-cry-me-a-river%E9%A2%98%E8%A7%A3/</url>
     <content><![CDATA[<h1 id="codeforces-2137g-cry-me-a-river-题解"><a class="markdownIt-Anchor" href="#codeforces-2137g-cry-me-a-river-题解"></a> Codeforces 2137G Cry Me a River 题解</h1>
@@ -494,425 +913,6 @@ p\sum_i w_i\ln|x_i|+o(p).
       <tags>
         <tag>不等式</tag>
         <tag>数学分析</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>树链剖分入门详解：把树上路径问题转成区间问题</title>
-    <url>/2026/03/13/%E6%A0%91%E9%93%BE%E5%89%96%E5%88%86%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B/</url>
-    <content><![CDATA[<h1 id="树链剖分入门详解把树上路径问题转成区间问题"><a class="markdownIt-Anchor" href="#树链剖分入门详解把树上路径问题转成区间问题"></a> 树链剖分入门详解：把树上路径问题转成区间问题</h1>
-<p>树上问题里，有一类题非常常见：</p>
-<ul>
-<li>查询两点路径上的信息</li>
-<li>修改两点路径上的信息</li>
-<li>查询某个点的子树信息</li>
-<li>修改某个点的子树信息</li>
-</ul>
-<p>如果暴力做，每次沿着树一路跳，复杂度往往很高。<br />
-而树链剖分的核心，就是把树上的操作，尽量转化成若干个连续区间操作，然后交给线段树之类的数据结构处理。</p>
-<p>它是竞赛里非常经典的一套工具。</p>
-<p>这篇文章尽量把它讲清楚：</p>
-<ol>
-<li>树链剖分到底在干什么</li>
-<li>两次 DFS 分别求什么</li>
-<li>为什么路径会被拆成若干段区间</li>
-<li>怎么做路径查询、路径修改、子树查询</li>
-<li>最后给一个完整代码模板</li>
-</ol>
-<h1 id="一-树链剖分到底是什么"><a class="markdownIt-Anchor" href="#一-树链剖分到底是什么"></a> 一、树链剖分到底是什么</h1>
-<p>先说一句最本质的话：</p>
-<blockquote>
-<p>树链剖分，就是把一棵树剖成若干条链，再把这些链映射到序列上。</p>
-</blockquote>
-<p>这样，树上的路径问题，就能变成序列上的区间问题。</p>
-<p>比如原来题目问：</p>
-<ul>
-<li>查询点 <code>u</code> 到点 <code>v</code> 路径上的点权和</li>
-</ul>
-<p>经过树链剖分后，就会变成：</p>
-<ul>
-<li>查询若干段区间的和</li>
-</ul>
-<p>然后这些区间交给线段树处理即可。</p>
-<h1 id="二-为什么要重链和轻链"><a class="markdownIt-Anchor" href="#二-为什么要重链和轻链"></a> 二、为什么要“重链”和“轻链”</h1>
-<p>树链剖分不是随便把树切成链，而是按一种特别的方式切：</p>
-<ul>
-<li>每个点选一个“最重要”的儿子，叫重儿子</li>
-<li>这条连向重儿子的边，叫重边</li>
-<li>其他儿子的边，叫轻边</li>
-<li>由重边连起来的一条链，叫重链</li>
-</ul>
-<p>那么问题来了：为什么这样选？</p>
-<p>答案是：为了让一条树上路径经过的链数尽量少。</p>
-<h2 id="21-重儿子怎么选"><a class="markdownIt-Anchor" href="#21-重儿子怎么选"></a> 2.1 重儿子怎么选</h2>
-<p>对于每个点 <code>u</code>，它的重儿子定义为：</p>
-<blockquote>
-<p>子树大小最大的那个儿子。</p>
-</blockquote>
-<p>也就是 <code>siz[v]</code> 最大的儿子 <code>v</code>。</p>
-<h2 id="22-这样选有什么好处"><a class="markdownIt-Anchor" href="#22-这样选有什么好处"></a> 2.2 这样选有什么好处</h2>
-<p>关键性质：</p>
-<blockquote>
-<p>从任意点往上走到根，经过的轻边数量是 <code>O(log n)</code> 的。</p>
-</blockquote>
-<p>为什么？</p>
-<p>因为一旦走一条轻边，说明你没有走向父亲的重儿子。<br />
-设当前点是 <code>u</code>，它的父亲是 <code>fa[u]</code>。</p>
-<p>由于 <code>u</code> 不是重儿子，所以父亲的重儿子子树大小至少和 <code>u</code> 一样大，于是有：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">siz[u] &lt;= siz[fa[u]] / 2</span><br></pre></td></tr></table></figure>
-<p>也就是说，每经过一条轻边，子树大小至少翻倍。<br />
-子树大小最多到 <code>n</code>，所以轻边数量最多 <code>log n</code> 条。</p>
-<p>这就意味着：</p>
-<blockquote>
-<p>任意两点路径，被拆成的链段数量是 <code>O(log n)</code> 级别的。</p>
-</blockquote>
-<p>这就是树链剖分高效的根源。</p>
-<h1 id="三-树链剖分维护哪些数组"><a class="markdownIt-Anchor" href="#三-树链剖分维护哪些数组"></a> 三、树链剖分维护哪些数组</h1>
-<p>树链剖分通常会维护下面这些信息：</p>
-<ul>
-<li><code>fa[u]</code>：父亲</li>
-<li><code>dep[u]</code>：深度</li>
-<li><code>siz[u]</code>：子树大小</li>
-<li><code>son[u]</code>：重儿子</li>
-<li><code>top[u]</code>：<code>u</code> 所在重链的链顶</li>
-<li><code>dfn[u]</code>：<code>u</code> 在线性序列中的编号</li>
-<li><code>rnk[i]</code>：编号 <code>i</code> 对应的原节点是谁</li>
-</ul>
-<p>这些量里，最关键的是：</p>
-<ul>
-<li><code>son[u]</code> 决定重链结构</li>
-<li><code>top[u]</code> 决定链顶</li>
-<li><code>dfn[u]</code> 决定怎么映射到序列上</li>
-</ul>
-<h1 id="四-两次-dfs-分别做什么"><a class="markdownIt-Anchor" href="#四-两次-dfs-分别做什么"></a> 四、两次 DFS 分别做什么</h1>
-<p>树链剖分核心就是两次 DFS。</p>
-<h2 id="41-第一次-dfs求基础信息"><a class="markdownIt-Anchor" href="#41-第一次-dfs求基础信息"></a> 4.1 第一次 DFS：求基础信息</h2>
-<p>第一遍 DFS 一般做这些事：</p>
-<ul>
-<li>求 <code>fa[u]</code></li>
-<li>求 <code>dep[u]</code></li>
-<li>求 <code>siz[u]</code></li>
-<li>求 <code>son[u]</code></li>
-</ul>
-<p>也就是先把“谁是重儿子”这件事确定下来。</p>
-<p>伪代码如下：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">dfs1(u, father):</span><br><span class="line">    fa[u] = father</span><br><span class="line">    dep[u] = dep[father] + 1</span><br><span class="line">    siz[u] = 1</span><br><span class="line">    son[u] = 0</span><br><span class="line"></span><br><span class="line">    for v in 邻接点:</span><br><span class="line">        if v == father:</span><br><span class="line">            continue</span><br><span class="line">        dfs1(v, u)</span><br><span class="line">        siz[u] += siz[v]</span><br><span class="line">        if siz[v] &gt; siz[son[u]]:</span><br><span class="line">            son[u] = v</span><br></pre></td></tr></table></figure>
-<p>这里 <code>son[u] = v</code> 的含义就是：</p>
-<ul>
-<li><code>v</code> 是 <code>u</code> 的重儿子</li>
-</ul>
-<h2 id="42-第二次-dfs给每个点编号并确定链顶"><a class="markdownIt-Anchor" href="#42-第二次-dfs给每个点编号并确定链顶"></a> 4.2 第二次 DFS：给每个点编号并确定链顶</h2>
-<p>第二遍 DFS 主要做：</p>
-<ul>
-<li>确定每个点的 <code>top[u]</code></li>
-<li>确定每个点的 <code>dfn[u]</code></li>
-<li>建立 <code>rnk[dfn[u]] = u</code></li>
-</ul>
-<p>伪代码：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">dfs2(u, t):</span><br><span class="line">    top[u] = t</span><br><span class="line">    dfn[u] = ++timer</span><br><span class="line">    rnk[timer] = u</span><br><span class="line"></span><br><span class="line">    if son[u] != 0:</span><br><span class="line">        dfs2(son[u], t)</span><br><span class="line"></span><br><span class="line">    for v in 邻接点:</span><br><span class="line">        if v == fa[u] or v == son[u]:</span><br><span class="line">            continue</span><br><span class="line">        dfs2(v, v)</span><br></pre></td></tr></table></figure>
-<p>这里最关键的是：</p>
-<ul>
-<li>如果走重儿子，那么链顶 <code>top</code> 不变</li>
-<li>如果走轻儿子，那么它自己成为新链的链顶</li>
-</ul>
-<h1 id="五-为什么子树会对应一个连续区间"><a class="markdownIt-Anchor" href="#五-为什么子树会对应一个连续区间"></a> 五、为什么子树会对应一个连续区间</h1>
-<p>这是树链剖分里一个特别好用的性质。</p>
-<p>因为第二次 DFS 编号时，我们总是先访问当前点，再优先一路走重儿子，然后递归别的儿子。<br />
-所以整棵子树在 <code>dfn</code> 序里一定是连续的一段。</p>
-<p>也就是说：</p>
-<blockquote>
-<p>点 <code>u</code> 的整棵子树，对应区间 <code>[dfn[u], dfn[u] + siz[u] - 1]</code></p>
-</blockquote>
-<p>这就很方便了。</p>
-<p>所以：</p>
-<ul>
-<li>子树查询 -&gt; 线段树区间查询</li>
-<li>子树修改 -&gt; 线段树区间修改</li>
-</ul>
-<h1 id="六-路径查询为什么能拆成若干段区间"><a class="markdownIt-Anchor" href="#六-路径查询为什么能拆成若干段区间"></a> 六、路径查询为什么能拆成若干段区间</h1>
-<p>这是树链剖分最核心的操作。</p>
-<p>假设我们要查询 <code>u</code> 到 <code>v</code> 的路径。</p>
-<p>如果 <code>u</code> 和 <code>v</code> 在同一条重链上，那就简单了：</p>
-<ul>
-<li>直接变成区间 <code>[dfn[u], dfn[v]]</code></li>
-</ul>
-<p>如果不在同一条链上怎么办？</p>
-<p>那就让链顶更深的那个点先往上跳。</p>
-<p>因为：</p>
-<ul>
-<li><code>top[u]</code> 表示 <code>u</code> 所在链的链顶</li>
-<li><code>top[v]</code> 表示 <code>v</code> 所在链的链顶</li>
-</ul>
-<p>若 <code>top[u] != top[v]</code>，说明它们不在同一条重链。</p>
-<p>我们比较：</p>
-<ul>
-<li><code>dep[top[u]]</code></li>
-<li><code>dep[top[v]]</code></li>
-</ul>
-<p>谁更深，谁先处理。</p>
-<p>比如 <code>dep[top[u]] &gt; dep[top[v]]</code>，说明 <code>u</code> 这边链顶更深，<br />
-那么 <code>u</code> 到 <code>top[u]</code> 这一整段一定都在答案路径里。</p>
-<p>于是可以先处理区间：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">[dfn[top[u]], dfn[u]]</span><br></pre></td></tr></table></figure>
-<p>然后让：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">u = fa[top[u]]</span><br></pre></td></tr></table></figure>
-<p>也就是直接跳到这条链上面去。</p>
-<p>重复这个过程，直到两点进入同一条链。</p>
-<p>最后再处理同链部分：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">[dfn[u], dfn[v]]</span><br></pre></td></tr></table></figure>
-<h1 id="七-路径查询的过程演示"><a class="markdownIt-Anchor" href="#七-路径查询的过程演示"></a> 七、路径查询的过程演示</h1>
-<p>假设有这样一棵树：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">     1</span><br><span class="line">   /   \</span><br><span class="line">  2     3</span><br><span class="line"> / \   / \</span><br><span class="line">4   5 6   7</span><br><span class="line">   /</span><br><span class="line">  8</span><br></pre></td></tr></table></figure>
-<p>如果重儿子按子树大小选，可能会形成若干条重链。</p>
-<p>现在我们要查询 <code>8 -&gt; 7</code> 的路径。</p>
-<p>它不会一次变成一个区间，<br />
-而是拆成类似下面几段：</p>
-<ul>
-<li><code>8 -&gt; 5</code> 所在链的一段</li>
-<li>再跳到 <code>2</code></li>
-<li>然后跳到 <code>1</code></li>
-<li>再处理 <code>1 -&gt; 3 -&gt; 7</code> 那边的一段</li>
-</ul>
-<p>最终路径被拆成若干条链上的连续区间。</p>
-<p>这就是树链剖分的本质：</p>
-<blockquote>
-<p>树上不连续，链上连续；路径整体不连续，但能拆成少量连续段。</p>
-</blockquote>
-<h1 id="八-常见操作怎么写"><a class="markdownIt-Anchor" href="#八-常见操作怎么写"></a> 八、常见操作怎么写</h1>
-<p>下面只讲思路，不先上代码。</p>
-<h2 id="81-路径查询"><a class="markdownIt-Anchor" href="#81-路径查询"></a> 8.1 路径查询</h2>
-<p>例如：</p>
-<ul>
-<li>查询 <code>u</code> 到 <code>v</code> 路径点权和</li>
-<li>查询 <code>u</code> 到 <code>v</code> 路径最大值</li>
-</ul>
-<p>做法：</p>
-<ol>
-<li>当 <code>top[u] != top[v]</code> 时，不断处理更深链顶那一侧的整段区间</li>
-<li>当 <code>top[u] == top[v]</code> 时，处理最后同链区间</li>
-</ol>
-<p>复杂度：</p>
-<ul>
-<li>每次跳链 <code>O(log n)</code> 次</li>
-<li>每次区间查询若用线段树是 <code>O(log n)</code></li>
-</ul>
-<p>总复杂度：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">O(log^2 n)</span><br></pre></td></tr></table></figure>
-<h2 id="82-路径修改"><a class="markdownIt-Anchor" href="#82-路径修改"></a> 8.2 路径修改</h2>
-<p>例如：</p>
-<ul>
-<li>给 <code>u</code> 到 <code>v</code> 路径所有点加上 <code>k</code></li>
-<li>给 <code>u</code> 到 <code>v</code> 路径所有点赋值</li>
-</ul>
-<p>思路和路径查询完全一样，<br />
-只不过把“区间查询”改成“区间修改”。</p>
-<p>复杂度仍然是：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">O(log^2 n)</span><br></pre></td></tr></table></figure>
-<h2 id="83-子树查询"><a class="markdownIt-Anchor" href="#83-子树查询"></a> 8.3 子树查询</h2>
-<p>因为子树对应连续区间：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">[dfn[u], dfn[u] + siz[u] - 1]</span><br></pre></td></tr></table></figure>
-<p>所以直接在线段树上查这一段即可。</p>
-<p>复杂度：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">O(log n)</span><br></pre></td></tr></table></figure>
-<h2 id="84-子树修改"><a class="markdownIt-Anchor" href="#84-子树修改"></a> 8.4 子树修改</h2>
-<p>也是同理，直接修改：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">[dfn[u], dfn[u] + siz[u] - 1]</span><br></pre></td></tr></table></figure>
-<p>复杂度：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">O(log n)</span><br></pre></td></tr></table></figure>
-<h1 id="九-点权剖分和边权剖分的区别"><a class="markdownIt-Anchor" href="#九-点权剖分和边权剖分的区别"></a> 九、点权剖分和边权剖分的区别</h1>
-<p>树链剖分常见有两种：</p>
-<ul>
-<li>点权剖分</li>
-<li>边权剖分</li>
-</ul>
-<h2 id="91-点权剖分"><a class="markdownIt-Anchor" href="#91-点权剖分"></a> 9.1 点权剖分</h2>
-<p>最常见。</p>
-<p>每个节点有权值，节点 <code>u</code> 的权值放在线性序列位置 <code>dfn[u]</code> 上。</p>
-<p>路径查询时，区间就是直接对节点编号区间操作。</p>
-<h2 id="92-边权剖分"><a class="markdownIt-Anchor" href="#92-边权剖分"></a> 9.2 边权剖分</h2>
-<p>如果题目是边有权值怎么办？</p>
-<p>常见处理方式是：</p>
-<blockquote>
-<p>把一条边的权值，挂到它更深的那个点上。</p>
-</blockquote>
-<p>比如边 <code>(fa[u], u)</code> 的权值，存到点 <code>u</code> 上。</p>
-<p>这样边权问题就转化成点权问题了。</p>
-<p>但要注意：</p>
-<ul>
-<li>查询路径边权时，LCA 那个点本身不对应边</li>
-<li>所以最后同链那一步，往往要用 <code>[dfn[u] + 1, dfn[v]]</code> 或者根据深度关系小心处理</li>
-</ul>
-<p>这一点特别容易写错。</p>
-<h1 id="十-树链剖分和-lca-的关系"><a class="markdownIt-Anchor" href="#十-树链剖分和-lca-的关系"></a> 十、树链剖分和 LCA 的关系</h1>
-<p>树链剖分也可以顺便求 LCA。</p>
-<p>方法很简单：</p>
-<p>当 <code>top[u] != top[v]</code> 时，不断让链顶更深的点往上跳。<br />
-最后它们进入同一条链，深度更小的那个点就是 LCA。</p>
-<p>代码思路：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">while top[u] != top[v]:</span><br><span class="line">    if dep[top[u]] &lt; dep[top[v]]:</span><br><span class="line">        swap(u, v)</span><br><span class="line">    u = fa[top[u]]</span><br><span class="line"></span><br><span class="line">return dep[u] &lt; dep[v] ? u : v</span><br></pre></td></tr></table></figure>
-<p>复杂度：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">O(log n)</span><br></pre></td></tr></table></figure>
-<h1 id="十一-完整模板点权-路径和-子树和"><a class="markdownIt-Anchor" href="#十一-完整模板点权-路径和-子树和"></a> 十一、完整模板（点权 + 路径和 + 子树和）</h1>
-<p>下面给一个比较常用的模板：</p>
-<ul>
-<li>支持建树</li>
-<li>支持树链剖分</li>
-<li>支持线段树</li>
-<li>支持路径求和</li>
-<li>支持路径加</li>
-<li>支持子树求和</li>
-<li>支持子树加</li>
-</ul>
-<p>这个模板适合作为入门版本。</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> int long long</span></span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> N = <span class="number">200005</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> n, m, rt;</span><br><span class="line">vector&lt;<span class="type">int</span>&gt; e[N];</span><br><span class="line"><span class="type">int</span> a[N];</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> fa[N], dep[N], siz[N], son[N];</span><br><span class="line"><span class="type">int</span> top[N], dfn[N], rnk_[N], tot;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">node</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> l, r;</span><br><span class="line">    <span class="type">int</span> sum, add;</span><br><span class="line">&#125; tr[N &lt;&lt; <span class="number">2</span>];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dfs1</span><span class="params">(<span class="type">int</span> u, <span class="type">int</span> f)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    fa[u] = f;</span><br><span class="line">    dep[u] = dep[f] + <span class="number">1</span>;</span><br><span class="line">    siz[u] = <span class="number">1</span>;</span><br><span class="line">    son[u] = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">auto</span> v : e[u])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (v == f)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">dfs1</span>(v, u);</span><br><span class="line">        siz[u] += siz[v];</span><br><span class="line">        <span class="keyword">if</span> (siz[v] &gt; siz[son[u]])</span><br><span class="line">        &#123;</span><br><span class="line">            son[u] = v;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dfs2</span><span class="params">(<span class="type">int</span> u, <span class="type">int</span> tp)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    top[u] = tp;</span><br><span class="line">    dfn[u] = ++tot;</span><br><span class="line">    rnk_[tot] = u;</span><br><span class="line">    <span class="keyword">if</span> (son[u])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">dfs2</span>(son[u], tp);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">auto</span> v : e[u])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (v == fa[u] || v == son[u])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">dfs2</span>(v, v);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">pushup</span><span class="params">(<span class="type">int</span> p)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    tr[p].sum = tr[p &lt;&lt; <span class="number">1</span>].sum + tr[p &lt;&lt; <span class="number">1</span> | <span class="number">1</span>].sum;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">work</span><span class="params">(<span class="type">int</span> p, <span class="type">int</span> k)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    tr[p].sum += (tr[p].r - tr[p].l + <span class="number">1</span>) * k;</span><br><span class="line">    tr[p].add += k;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">pushdown</span><span class="params">(<span class="type">int</span> p)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (tr[p].add)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">work</span>(p &lt;&lt; <span class="number">1</span>, tr[p].add);</span><br><span class="line">        <span class="built_in">work</span>(p &lt;&lt; <span class="number">1</span> | <span class="number">1</span>, tr[p].add);</span><br><span class="line">        tr[p].add = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">build</span><span class="params">(<span class="type">int</span> p, <span class="type">int</span> l, <span class="type">int</span> r)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    tr[p].l = l;</span><br><span class="line">    tr[p].r = r;</span><br><span class="line">    tr[p].add = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (l == r)</span><br><span class="line">    &#123;</span><br><span class="line">        tr[p].sum = a[rnk_[l]];</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> mid = (l + r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">    <span class="built_in">build</span>(p &lt;&lt; <span class="number">1</span>, l, mid);</span><br><span class="line">    <span class="built_in">build</span>(p &lt;&lt; <span class="number">1</span> | <span class="number">1</span>, mid + <span class="number">1</span>, r);</span><br><span class="line">    <span class="built_in">pushup</span>(p);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">modify</span><span class="params">(<span class="type">int</span> p, <span class="type">int</span> l, <span class="type">int</span> r, <span class="type">int</span> k)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (l &lt;= tr[p].l &amp;&amp; tr[p].r &lt;= r)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">work</span>(p, k);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">pushdown</span>(p);</span><br><span class="line">    <span class="type">int</span> mid = (tr[p].l + tr[p].r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span> (l &lt;= mid)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">modify</span>(p &lt;&lt; <span class="number">1</span>, l, r, k);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (r &gt; mid)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">modify</span>(p &lt;&lt; <span class="number">1</span> | <span class="number">1</span>, l, r, k);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">pushup</span>(p);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">query</span><span class="params">(<span class="type">int</span> p, <span class="type">int</span> l, <span class="type">int</span> r)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (l &lt;= tr[p].l &amp;&amp; tr[p].r &lt;= r)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> tr[p].sum;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">pushdown</span>(p);</span><br><span class="line">    <span class="type">int</span> mid = (tr[p].l + tr[p].r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">    <span class="type">int</span> res = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (l &lt;= mid)</span><br><span class="line">    &#123;</span><br><span class="line">        res += <span class="built_in">query</span>(p &lt;&lt; <span class="number">1</span>, l, r);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (r &gt; mid)</span><br><span class="line">    &#123;</span><br><span class="line">        res += <span class="built_in">query</span>(p &lt;&lt; <span class="number">1</span> | <span class="number">1</span>, l, r);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">modify_path</span><span class="params">(<span class="type">int</span> u, <span class="type">int</span> v, <span class="type">int</span> k)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">while</span> (top[u] != top[v])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (dep[top[u]] &lt; dep[top[v]])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">swap</span>(u, v);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">modify</span>(<span class="number">1</span>, dfn[top[u]], dfn[u], k);</span><br><span class="line">        u = fa[top[u]];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (dep[u] &gt; dep[v])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">swap</span>(u, v);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">modify</span>(<span class="number">1</span>, dfn[u], dfn[v], k);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">query_path</span><span class="params">(<span class="type">int</span> u, <span class="type">int</span> v)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> res = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (top[u] != top[v])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (dep[top[u]] &lt; dep[top[v]])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">swap</span>(u, v);</span><br><span class="line">        &#125;</span><br><span class="line">        res += <span class="built_in">query</span>(<span class="number">1</span>, dfn[top[u]], dfn[u]);</span><br><span class="line">        u = fa[top[u]];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (dep[u] &gt; dep[v])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">swap</span>(u, v);</span><br><span class="line">    &#125;</span><br><span class="line">    res += <span class="built_in">query</span>(<span class="number">1</span>, dfn[u], dfn[v]);</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">modify_tree</span><span class="params">(<span class="type">int</span> u, <span class="type">int</span> k)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">modify</span>(<span class="number">1</span>, dfn[u], dfn[u] + siz[u] - <span class="number">1</span>, k);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">query_tree</span><span class="params">(<span class="type">int</span> u)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">query</span>(<span class="number">1</span>, dfn[u], dfn[u] + siz[u] - <span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">signed</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ios::<span class="built_in">sync_with_stdio</span>(<span class="number">0</span>);</span><br><span class="line">    cin.<span class="built_in">tie</span>(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    cin &gt;&gt; n &gt;&gt; m &gt;&gt; rt;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        cin &gt;&gt; a[i];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt; n; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> u, v;</span><br><span class="line">        cin &gt;&gt; u &gt;&gt; v;</span><br><span class="line">        e[u].<span class="built_in">push_back</span>(v);</span><br><span class="line">        e[v].<span class="built_in">push_back</span>(u);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">dfs1</span>(rt, <span class="number">0</span>);</span><br><span class="line">    <span class="built_in">dfs2</span>(rt, rt);</span><br><span class="line">    <span class="built_in">build</span>(<span class="number">1</span>, <span class="number">1</span>, n);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (m--)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> op;</span><br><span class="line">        cin &gt;&gt; op;</span><br><span class="line">        <span class="keyword">if</span> (op == <span class="number">1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="type">int</span> u, v, k;</span><br><span class="line">            cin &gt;&gt; u &gt;&gt; v &gt;&gt; k;</span><br><span class="line">            <span class="built_in">modify_path</span>(u, v, k);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (op == <span class="number">2</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="type">int</span> u, v;</span><br><span class="line">            cin &gt;&gt; u &gt;&gt; v;</span><br><span class="line">            cout &lt;&lt; <span class="built_in">query_path</span>(u, v) &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (op == <span class="number">3</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="type">int</span> u, k;</span><br><span class="line">            cin &gt;&gt; u &gt;&gt; k;</span><br><span class="line">            <span class="built_in">modify_tree</span>(u, k);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="type">int</span> u;</span><br><span class="line">            cin &gt;&gt; u;</span><br><span class="line">            cout &lt;&lt; <span class="built_in">query_tree</span>(u) &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="十二-这个模板该怎么理解"><a class="markdownIt-Anchor" href="#十二-这个模板该怎么理解"></a> 十二、这个模板该怎么理解</h1>
-<p>上面的代码其实就分成三层。</p>
-<h2 id="第一层树的基础信息"><a class="markdownIt-Anchor" href="#第一层树的基础信息"></a> 第一层：树的基础信息</h2>
-<p>这部分是：</p>
-<ul>
-<li><code>dfs1</code></li>
-<li><code>dfs2</code></li>
-</ul>
-<p>负责把树的信息剖出来。</p>
-<h3 id="dfs1"><a class="markdownIt-Anchor" href="#dfs1"></a> <code>dfs1</code></h3>
-<p>求：</p>
-<ul>
-<li>父亲</li>
-<li>深度</li>
-<li>子树大小</li>
-<li>重儿子</li>
-</ul>
-<h3 id="dfs2"><a class="markdownIt-Anchor" href="#dfs2"></a> <code>dfs2</code></h3>
-<p>求：</p>
-<ul>
-<li>链顶</li>
-<li>dfs 序编号</li>
-<li>点和编号的映射</li>
-</ul>
-<h2 id="第二层线段树"><a class="markdownIt-Anchor" href="#第二层线段树"></a> 第二层：线段树</h2>
-<p>线段树维护的是剖分后的序列。</p>
-<p>也就是说：</p>
-<ul>
-<li>第 <code>dfn[u]</code> 个位置，对应原树节点 <code>u</code></li>
-</ul>
-<p>所以建树时：</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">tr[p].sum = a[rnk_[l]];</span><br></pre></td></tr></table></figure>
-<p>意思就是：</p>
-<ul>
-<li>线段树位置 <code>l</code></li>
-<li>对应原节点 <code>rnk_[l]</code></li>
-<li>它的点权是 <code>a[rnk_[l]]</code></li>
-</ul>
-<h2 id="第三层树上操作转区间操作"><a class="markdownIt-Anchor" href="#第三层树上操作转区间操作"></a> 第三层：树上操作转区间操作</h2>
-<h3 id="路径修改"><a class="markdownIt-Anchor" href="#路径修改"></a> 路径修改</h3>
-<p><code>modify_path(u, v, k)</code></p>
-<p>不断拆链，拆成若干段区间去修改。</p>
-<h3 id="路径查询"><a class="markdownIt-Anchor" href="#路径查询"></a> 路径查询</h3>
-<p><code>query_path(u, v)</code></p>
-<p>也是不断拆链，把若干段区间答案加起来。</p>
-<h3 id="子树修改"><a class="markdownIt-Anchor" href="#子树修改"></a> 子树修改</h3>
-<p><code>modify_tree(u, k)</code></p>
-<p>直接改：</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">[dfn[u], dfn[u] + siz[u] - <span class="number">1</span>]</span><br></pre></td></tr></table></figure>
-<h3 id="子树查询"><a class="markdownIt-Anchor" href="#子树查询"></a> 子树查询</h3>
-<p><code>query_tree(u)</code></p>
-<p>直接查这一段。</p>
-<h1 id="十三-复杂度分析"><a class="markdownIt-Anchor" href="#十三-复杂度分析"></a> 十三、复杂度分析</h1>
-<p>设树有 <code>n</code> 个点。</p>
-<ul>
-<li>预处理两次 DFS：<code>O(n)</code></li>
-<li>建线段树：<code>O(n)</code></li>
-</ul>
-<p>每次路径操作：</p>
-<ul>
-<li>最多跳 <code>O(log n)</code> 条链</li>
-<li>每次线段树操作 <code>O(log n)</code></li>
-</ul>
-<p>所以路径操作复杂度为：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">O(log^2 n)</span><br></pre></td></tr></table></figure>
-<p>每次子树操作：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">O(log n)</span><br></pre></td></tr></table></figure>
-<p>这已经足够应对大多数竞赛题。</p>
-<h1 id="十四-树链剖分最容易错的地方"><a class="markdownIt-Anchor" href="#十四-树链剖分最容易错的地方"></a> 十四、树链剖分最容易错的地方</h1>
-<p>这个部分非常重要。</p>
-<h2 id="141-sonu-可能为-0"><a class="markdownIt-Anchor" href="#141-sonu-可能为-0"></a> 14.1 <code>son[u]</code> 可能为 0</h2>
-<p>叶子节点没有重儿子，所以：</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (son[u])</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">dfs2</span>(son[u], tp);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里一定要判一下。</p>
-<h2 id="142-同链最后一步注意深度顺序"><a class="markdownIt-Anchor" href="#142-同链最后一步注意深度顺序"></a> 14.2 同链最后一步注意深度顺序</h2>
-<p>当 <code>top[u] == top[v]</code> 后，要保证 <code>u</code> 更浅：</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (dep[u] &gt; dep[v])</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">swap</span>(u, v);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>否则区间左右可能反。</p>
-<h2 id="143-子树区间是-dfnu-~-dfnu-sizu-1"><a class="markdownIt-Anchor" href="#143-子树区间是-dfnu-~-dfnu-sizu-1"></a> 14.3 子树区间是 <code>dfn[u] ~ dfn[u] + siz[u] - 1</code></h2>
-<p>这里非常容易少写 <code>-1</code>。</p>
-<p>正确写法：</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">[dfn[u], dfn[u] + siz[u] - <span class="number">1</span>]</span><br></pre></td></tr></table></figure>
-<h2 id="144-边权剖分最后一段常常不一样"><a class="markdownIt-Anchor" href="#144-边权剖分最后一段常常不一样"></a> 14.4 边权剖分最后一段常常不一样</h2>
-<p>如果是边权，不是点权，那么最后同链处理时，通常要排除 LCA 对应那个点。</p>
-<p>这一点一定要分清。</p>
-<h2 id="145-根节点怎么选"><a class="markdownIt-Anchor" href="#145-根节点怎么选"></a> 14.5 根节点怎么选</h2>
-<p>树链剖分本质上要先选根。<br />
-一般题目会指定根，没指定时常设 <code>1</code> 为根。</p>
-<p>不同根会影响：</p>
-<ul>
-<li><code>fa</code></li>
-<li><code>dep</code></li>
-<li><code>siz</code></li>
-<li><code>son</code></li>
-<li><code>top</code></li>
-<li><code>dfn</code></li>
-</ul>
-<p>所以根一旦定了，整套剖分都按这个根来。</p>
-<h1 id="十五-树链剖分适合什么题"><a class="markdownIt-Anchor" href="#十五-树链剖分适合什么题"></a> 十五、树链剖分适合什么题</h1>
-<p>通常看到下面这些关键词，就该想到 HLD：</p>
-<ul>
-<li>树上路径修改 / 查询</li>
-<li>树上子树修改 / 查询</li>
-<li>点权或边权动态维护</li>
-<li>需要支持多次在线操作</li>
-</ul>
-<p>比如：</p>
-<ul>
-<li>查询两点路径和</li>
-<li>查询两点路径最大值</li>
-<li>路径加法</li>
-<li>子树加法</li>
-<li>子树求和</li>
-<li>边权修改、路径最大边权</li>
-</ul>
-<h1 id="十六-什么时候不该用树链剖分"><a class="markdownIt-Anchor" href="#十六-什么时候不该用树链剖分"></a> 十六、什么时候不该用树链剖分</h1>
-<p>也不是所有树题都要上 HLD。</p>
-<p>比如：</p>
-<ul>
-<li>只有一次查询，可以直接暴力或 DFS</li>
-<li>静态离线问题，有更简单做法</li>
-<li>只查 LCA，用倍增更简单</li>
-<li>纯子树静态问题，一个 DFS 序就够了</li>
-</ul>
-<p>所以树链剖分主要适合：</p>
-<blockquote>
-<p>树上多次动态路径/子树操作。</p>
-</blockquote>
-<h1 id="十七-一个最简短的总结"><a class="markdownIt-Anchor" href="#十七-一个最简短的总结"></a> 十七、一个最简短的总结</h1>
-<p>可以把树链剖分记成四句话：</p>
-<ol>
-<li>先用 <code>dfs1</code> 求重儿子</li>
-<li>再用 <code>dfs2</code> 给每个点编号</li>
-<li>子树对应 DFS 序上的连续区间</li>
-<li>路径被拆成若干条重链上的连续区间</li>
-</ol>
-<p>所以它本质就是：</p>
-<blockquote>
-<p>把树上的问题，变成序列上的区间问题。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>图论</tag>
-        <tag>数据结构</tag>
-        <tag>树链剖分</tag>
-        <tag>线段树</tag>
       </tags>
   </entry>
 </search>
