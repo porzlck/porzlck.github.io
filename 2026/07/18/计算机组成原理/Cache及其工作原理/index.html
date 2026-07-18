@@ -232,7 +232,27 @@
 <p>访问流程如下：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">CPU 请求地址 M</span><br><span class="line">       ↓</span><br><span class="line">Cache 中没有对应数据</span><br><span class="line">       ↓</span><br><span class="line">从下一层 Cache 或主存读取数据块</span><br><span class="line">       ↓</span><br><span class="line">将数据块装入 Cache</span><br><span class="line">       ↓</span><br><span class="line">把 CPU 需要的数据交给 CPU</span><br></pre></td></tr></table></figure>
 <p>因此，典型的 Cache 访问过程可以表示为：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">flowchart TD</span><br><span class="line">    A([开始])</span><br><span class="line">    B[CPU 给出主存地址 M]</span><br><span class="line">    C&#123;M 所在的主存块&lt;br/&gt;是否在 Cache 中&#125;</span><br><span class="line">    D[从 Cache 中读取数据并送给 CPU]</span><br><span class="line">    E[从下一层 Cache 或主存中&lt;br/&gt;读取 M 所在的数据块]</span><br><span class="line">    F[在 Cache 中寻找可用位置]</span><br><span class="line">    G[将数据块装入 Cache]</span><br><span class="line">    H[将 M 对应的数据送给 CPU]</span><br><span class="line">    I([结束])</span><br><span class="line"></span><br><span class="line">    A --&gt; B</span><br><span class="line">    B --&gt; C</span><br><span class="line">    C --&gt;|命中| D</span><br><span class="line">    D --&gt; I</span><br><span class="line"></span><br><span class="line">    C --&gt;|缺失| E</span><br><span class="line">    E --&gt; F</span><br><span class="line">    F --&gt; G</span><br><span class="line">    G --&gt; H</span><br><span class="line">    H --&gt; I</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight mermaid">flowchart TD
+    A([开始])
+    B[CPU 给出主存地址 M]
+    C&#123;M 所在的主存块&lt;br/&gt;是否在 Cache 中&#125;
+    D[从 Cache 中读取数据并送给 CPU]
+    E[从下一层 Cache 或主存中&lt;br/&gt;读取 M 所在的数据块]
+    F[在 Cache 中寻找可用位置]
+    G[将数据块装入 Cache]
+    H[将 M 对应的数据送给 CPU]
+    I([结束])
+
+    A --&gt; B
+    B --&gt; C
+    C --&gt;|命中| D
+    D --&gt; I
+
+    C --&gt;|缺失| E
+    E --&gt; F
+    F --&gt; G
+    G --&gt; H
+    H --&gt; I</code></pre>
 <hr />
 <h2 id="5-cache-中的数据是怎样组织的"><a class="markdownIt-Anchor" href="#5-cache-中的数据是怎样组织的"></a> 5. Cache 中的数据是怎样组织的</h2>
 <p>Cache 由多条 Cache Line 组成。</p>
@@ -331,7 +351,36 @@
 <hr />
 <h2 id="11-cache-的基本查找过程"><a class="markdownIt-Anchor" href="#11-cache-的基本查找过程"></a> 11. Cache 的基本查找过程</h2>
 <p>Cache 的完整查找过程如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">flowchart TD</span><br><span class="line">    A[CPU 发出内存地址]</span><br><span class="line">    B[将地址拆分为&lt;br/&gt;Tag、Index 和 Offset]</span><br><span class="line">    C[根据 Index 定位 Cache 组]</span><br><span class="line">    D&#123;Valid 是否有效&lt;br/&gt;并且 Tag 是否匹配&#125;</span><br><span class="line"></span><br><span class="line">    E[Cache 命中]</span><br><span class="line">    F[根据 Offset&lt;br/&gt;取出目标数据]</span><br><span class="line">    G[将数据返回 CPU]</span><br><span class="line"></span><br><span class="line">    H[Cache 缺失]</span><br><span class="line">    I[访问下一层 Cache 或主存]</span><br><span class="line">    J[读取目标地址所在的整块数据]</span><br><span class="line">    K[将数据块装入 Cache]</span><br><span class="line">    L[更新 Tag 和 Valid]</span><br><span class="line">    </span><br><span class="line">    A --&gt; B</span><br><span class="line">    B --&gt; C</span><br><span class="line">    C --&gt; D</span><br><span class="line"></span><br><span class="line">    D --&gt;|是| E</span><br><span class="line">    E --&gt; F</span><br><span class="line">    F --&gt; G</span><br><span class="line"></span><br><span class="line">    D --&gt;|否| H</span><br><span class="line">    H --&gt; I</span><br><span class="line">    I --&gt; J</span><br><span class="line">    J --&gt; K</span><br><span class="line">    K --&gt; L</span><br><span class="line">    L --&gt; F</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight mermaid">flowchart TD
+    A[CPU 发出内存地址]
+    B[将地址拆分为&lt;br/&gt;Tag、Index 和 Offset]
+    C[根据 Index 定位 Cache 组]
+    D&#123;Valid 是否有效&lt;br/&gt;并且 Tag 是否匹配&#125;
+
+    E[Cache 命中]
+    F[根据 Offset&lt;br/&gt;取出目标数据]
+    G[将数据返回 CPU]
+
+    H[Cache 缺失]
+    I[访问下一层 Cache 或主存]
+    J[读取目标地址所在的整块数据]
+    K[将数据块装入 Cache]
+    L[更新 Tag 和 Valid]
+    
+    A --&gt; B
+    B --&gt; C
+    C --&gt; D
+
+    D --&gt;|是| E
+    E --&gt; F
+    F --&gt; G
+
+    D --&gt;|否| H
+    H --&gt; I
+    I --&gt; J
+    J --&gt; K
+    K --&gt; L
+    L --&gt; F</code></pre>
 <hr />
 <h2 id="12-cache-满了怎么办"><a class="markdownIt-Anchor" href="#12-cache-满了怎么办"></a> 12. Cache 满了怎么办</h2>
 <p>Cache 的容量远小于主存，因此 Cache 最终会被装满。</p>
@@ -364,7 +413,27 @@
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">将旧 Cache Line 写回下一层存储器</span><br></pre></td></tr></table></figure>
 <p>然后才能用新的数据覆盖这条 Cache Line。</p>
 <p>流程如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">flowchart TD</span><br><span class="line">    A[发生 Cache Miss]</span><br><span class="line">    B&#123;目标位置是否存在空闲 Cache Line&#125;</span><br><span class="line">    C[直接使用空闲 Cache Line]</span><br><span class="line">    D[根据替换算法选择牺牲行]</span><br><span class="line">    E&#123;牺牲行的 Dirty 是否为 1&#125;</span><br><span class="line">    F[将旧数据写回下一层存储器]</span><br><span class="line">    G[从下一层读取新的数据块]</span><br><span class="line">    H[将新数据块装入 Cache]</span><br><span class="line">    I[更新 Tag、Valid 和 Dirty]</span><br><span class="line"></span><br><span class="line">    A --&gt; B</span><br><span class="line">    B --&gt;|有| C</span><br><span class="line">    B --&gt;|没有| D</span><br><span class="line">    D --&gt; E</span><br><span class="line">    E --&gt;|是| F</span><br><span class="line">    E --&gt;|否| G</span><br><span class="line">    F --&gt; G</span><br><span class="line">    C --&gt; G</span><br><span class="line">    G --&gt; H</span><br><span class="line">    H --&gt; I</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight mermaid">flowchart TD
+    A[发生 Cache Miss]
+    B&#123;目标位置是否存在空闲 Cache Line&#125;
+    C[直接使用空闲 Cache Line]
+    D[根据替换算法选择牺牲行]
+    E&#123;牺牲行的 Dirty 是否为 1&#125;
+    F[将旧数据写回下一层存储器]
+    G[从下一层读取新的数据块]
+    H[将新数据块装入 Cache]
+    I[更新 Tag、Valid 和 Dirty]
+
+    A --&gt; B
+    B --&gt;|有| C
+    B --&gt;|没有| D
+    D --&gt; E
+    E --&gt;|是| F
+    E --&gt;|否| G
+    F --&gt; G
+    C --&gt; G
+    G --&gt; H
+    H --&gt; I</code></pre>
 <hr />
 <h2 id="14-cache-的三种映射方式"><a class="markdownIt-Anchor" href="#14-cache-的三种映射方式"></a> 14. Cache 的三种映射方式</h2>
 <p>主存中的数据块放到 Cache 时，需要遵循一定的映射规则。</p>
@@ -587,7 +656,48 @@
 <hr />
 <h2 id="26-cache-完整工作流程"><a class="markdownIt-Anchor" href="#26-cache-完整工作流程"></a> 26. Cache 完整工作流程</h2>
 <p>CPU 访问一个内存地址时，Cache 的完整工作过程可以概括为：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">flowchart TD</span><br><span class="line">    A[CPU 发出内存访问请求]</span><br><span class="line">    B[将地址拆分为&lt;br/&gt;Tag、Index 和 Offset]</span><br><span class="line">    C[根据 Index 找到 Cache 组]</span><br><span class="line">    D[比较组内各 Cache Line 的 Tag]</span><br><span class="line">    E&#123;是否存在 Valid 为 1&lt;br/&gt;且 Tag 匹配的 Cache Line&#125;</span><br><span class="line"></span><br><span class="line">    F[Cache 命中]</span><br><span class="line">    G[根据 Offset 取出目标数据]</span><br><span class="line">    H[将数据返回 CPU]</span><br><span class="line"></span><br><span class="line">    I[Cache 缺失]</span><br><span class="line">    J&#123;目标组中是否有空闲 Cache Line&#125;</span><br><span class="line">    K[选择空闲 Cache Line]</span><br><span class="line">    L[根据替换算法选择牺牲行]</span><br><span class="line">    M&#123;牺牲行是否为脏数据&#125;</span><br><span class="line">    N[将旧数据写回下一层存储器]</span><br><span class="line">    O[从下一层 Cache 或 DRAM&lt;br/&gt;读取目标地址所在的数据块]</span><br><span class="line">    P[将数据块装入 Cache]</span><br><span class="line">    Q[更新 Tag、Valid 和 Dirty]</span><br><span class="line">    </span><br><span class="line">    A --&gt; B</span><br><span class="line">    B --&gt; C</span><br><span class="line">    C --&gt; D</span><br><span class="line">    D --&gt; E</span><br><span class="line"></span><br><span class="line">    E --&gt;|是| F</span><br><span class="line">    F --&gt; G</span><br><span class="line">    G --&gt; H</span><br><span class="line"></span><br><span class="line">    E --&gt;|否| I</span><br><span class="line">    I --&gt; J</span><br><span class="line">    J --&gt;|有空闲行| K</span><br><span class="line">    J --&gt;|没有空闲行| L</span><br><span class="line">    L --&gt; M</span><br><span class="line">    M --&gt;|是| N</span><br><span class="line">    M --&gt;|否| O</span><br><span class="line">    N --&gt; O</span><br><span class="line">    K --&gt; O</span><br><span class="line">    O --&gt; P</span><br><span class="line">    P --&gt; Q</span><br><span class="line">    Q --&gt; G</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight mermaid">flowchart TD
+    A[CPU 发出内存访问请求]
+    B[将地址拆分为&lt;br/&gt;Tag、Index 和 Offset]
+    C[根据 Index 找到 Cache 组]
+    D[比较组内各 Cache Line 的 Tag]
+    E&#123;是否存在 Valid 为 1&lt;br/&gt;且 Tag 匹配的 Cache Line&#125;
+
+    F[Cache 命中]
+    G[根据 Offset 取出目标数据]
+    H[将数据返回 CPU]
+
+    I[Cache 缺失]
+    J&#123;目标组中是否有空闲 Cache Line&#125;
+    K[选择空闲 Cache Line]
+    L[根据替换算法选择牺牲行]
+    M&#123;牺牲行是否为脏数据&#125;
+    N[将旧数据写回下一层存储器]
+    O[从下一层 Cache 或 DRAM&lt;br/&gt;读取目标地址所在的数据块]
+    P[将数据块装入 Cache]
+    Q[更新 Tag、Valid 和 Dirty]
+    
+    A --&gt; B
+    B --&gt; C
+    C --&gt; D
+    D --&gt; E
+
+    E --&gt;|是| F
+    F --&gt; G
+    G --&gt; H
+
+    E --&gt;|否| I
+    I --&gt; J
+    J --&gt;|有空闲行| K
+    J --&gt;|没有空闲行| L
+    L --&gt; M
+    M --&gt;|是| N
+    M --&gt;|否| O
+    N --&gt; O
+    K --&gt; O
+    O --&gt; P
+    P --&gt; Q
+    Q --&gt; G</code></pre>
 <hr />
 <h2 id="27-总结"><a class="markdownIt-Anchor" href="#27-总结"></a> 27. 总结</h2>
 <p>Cache 的核心作用是利用程序的局部性，将 CPU 近期可能访问的数据提前保存在高速存储器中。</p>
