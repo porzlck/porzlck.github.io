@@ -1,0 +1,700 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Cache及其工作原理 | porzlck</title><meta name="author" content="porzlck"><meta name="copyright" content="porzlck"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Cache 工作原理 Cache，即高速缓冲存储器，是位于 CPU 和主存之间的一种高速存储器。 它的主要作用是：  缓解 CPU 运算速度与主存访问速度之间的差距。    1. 为什么需要 Cache CPU 的运行速度非常快，而主存 DRAM 的访问速度相对较慢。 当 CPU 执行下面这样的代码时： 1x &#x3D; a[0]; CPU 需要从内存中读取数据。 如果 CPU 每次读取数据都直接访问">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cache及其工作原理">
+<meta property="og:url" content="https://porzlck.github.io/2026/07/17/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/Cache%E5%8F%8A%E5%85%B6%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:site_name" content="porzlck">
+<meta property="og:description" content="Cache 工作原理 Cache，即高速缓冲存储器，是位于 CPU 和主存之间的一种高速存储器。 它的主要作用是：  缓解 CPU 运算速度与主存访问速度之间的差距。    1. 为什么需要 Cache CPU 的运行速度非常快，而主存 DRAM 的访问速度相对较慢。 当 CPU 执行下面这样的代码时： 1x &#x3D; a[0]; CPU 需要从内存中读取数据。 如果 CPU 每次读取数据都直接访问">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://porzlck.github.io/img/author.jpg">
+<meta property="article:published_time" content="2026-07-17T14:00:00.000Z">
+<meta property="article:modified_time" content="2026-07-18T03:37:06.529Z">
+<meta property="article:author" content="porzlck">
+<meta property="article:tag" content="Cache">
+<meta property="article:tag" content="计算机组成原理">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://porzlck.github.io/img/author.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Cache及其工作原理",
+  "url": "https://porzlck.github.io/2026/07/17/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/Cache%E5%8F%8A%E5%85%B6%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/",
+  "image": "https://porzlck.github.io/img/author.jpg",
+  "datePublished": "2026-07-17T14:00:00.000Z",
+  "dateModified": "2026-07-18T03:37:06.529Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "porzlck",
+      "url": "https://porzlck.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://porzlck.github.io/2026/07/17/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/Cache%E5%8F%8A%E5%85%B6%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Cache及其工作原理',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.1"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/author.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">51</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">77</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" href="/message/"><i class="fa-fw fas fa-comment-dots"></i><span> 留言板</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">porzlck</span></a><a class="nav-page-title" href="/"><span class="site-name">Cache及其工作原理</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" href="/message/"><i class="fa-fw fas fa-comment-dots"></i><span> 留言板</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">Cache及其工作原理</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-07-17T14:00:00.000Z" title="发表于 2026-07-17 22:00:00">2026-07-17</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-07-18T03:37:06.529Z" title="更新于 2026-07-18 11:37:06">2026-07-18</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/">计算机基础</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="container post-content" id="article-container"><h1 id="cache-工作原理"><a class="markdownIt-Anchor" href="#cache-工作原理"></a> Cache 工作原理</h1>
+<p>Cache，即高速缓冲存储器，是位于 CPU 和主存之间的一种高速存储器。</p>
+<p>它的主要作用是：</p>
+<blockquote>
+<p>缓解 CPU 运算速度与主存访问速度之间的差距。</p>
+</blockquote>
+<hr />
+<h2 id="1-为什么需要-cache"><a class="markdownIt-Anchor" href="#1-为什么需要-cache"></a> 1. 为什么需要 Cache</h2>
+<p>CPU 的运行速度非常快，而主存 DRAM 的访问速度相对较慢。</p>
+<p>当 CPU 执行下面这样的代码时：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x = a[<span class="number">0</span>];</span><br></pre></td></tr></table></figure>
+<p>CPU 需要从内存中读取数据。</p>
+<p>如果 CPU 每次读取数据都直接访问 DRAM，就可能等待很长时间。因此，在 CPU 与主存之间增加了速度更快的 Cache。</p>
+<p>计算机中的存储层次通常如下：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CPU → L1 Cache → L2 Cache → L3 Cache → DRAM</span><br><span class="line">       最快       较快       较慢       最慢</span><br><span class="line">       最小       较大       更大       最大</span><br></pre></td></tr></table></figure>
+<p>CPU 读取数据时，会先查找 L1 Cache。</p>
+<p>如果 L1 中没有，再查找 L2；L2 中没有，再查找 L3；L3 中仍然没有，最后才访问主存 DRAM。</p>
+<hr />
+<h2 id="2-cache-保存的是什么"><a class="markdownIt-Anchor" href="#2-cache-保存的是什么"></a> 2. Cache 保存的是什么</h2>
+<p>Cache 保存的不是另一套独立的数据，而是：</p>
+<blockquote>
+<p>主存中部分数据的副本。</p>
+</blockquote>
+<p>例如，主存中保存了以下数据：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">地址 1000：数据 A</span><br><span class="line">地址 1001：数据 B</span><br><span class="line">地址 1002：数据 C</span><br><span class="line">地址 1003：数据 D</span><br><span class="line">……</span><br></pre></td></tr></table></figure>
+<p>CPU 第一次访问地址 <code>1000</code> 时，如果 Cache 中没有对应的数据，就需要从主存读取。</p>
+<p>但是，Cache 和主存之间通常不会只传输地址 <code>1000</code> 对应的一个字节，而是会把附近连续的一整块数据一起读入 Cache。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">主存中的一个数据块</span><br><span class="line">          ↓</span><br><span class="line">一整条 Cache Line</span><br></pre></td></tr></table></figure>
+<p>这个交换单位通常称为：</p>
+<ul>
+<li>Cache Line</li>
+<li>Cache Block</li>
+<li>高速缓存行</li>
+<li>高速缓存块</li>
+</ul>
+<p>现代处理器常见的 Cache Line 大小是 64 字节，但具体大小由处理器决定。</p>
+<p>主存与 Cache 之间按块交换数据，是为了利用程序的空间局部性。</p>
+<hr />
+<h2 id="3-程序的局部性原理"><a class="markdownIt-Anchor" href="#3-程序的局部性原理"></a> 3. 程序的局部性原理</h2>
+<p>Cache 能够提高性能，主要依赖程序访问数据时表现出来的局部性。</p>
+<h3 id="31-时间局部性"><a class="markdownIt-Anchor" href="#31-时间局部性"></a> 3.1 时间局部性</h3>
+<p>如果一个数据刚刚被访问过，那么它在短时间内可能再次被访问。</p>
+<p>例如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10000</span>; i++) &#123;</span><br><span class="line">    sum += x;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>变量 <code>sum</code> 和 <code>x</code> 会被反复访问。</p>
+<p>第一次读取这些变量后，它们被放入 Cache，后面的访问就可能直接从 Cache 中完成。</p>
+<h3 id="32-空间局部性"><a class="markdownIt-Anchor" href="#32-空间局部性"></a> 3.2 空间局部性</h3>
+<p>如果一个内存地址被访问，那么它附近的地址也可能很快被访问。</p>
+<p>例如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10000</span>; i++) &#123;</span><br><span class="line">    sum += <span class="built_in">array</span>[i];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>数组元素在内存中通常是连续存放的。</p>
+<p>CPU 第一次访问 <code>array[0]</code> 时，会把包含 <code>array[0]</code> 的一整条 Cache Line 读入 Cache。</p>
+<p>由于这条 Cache Line 中还包含后续的一些数组元素，因此访问 <code>array[1]</code>、<code>array[2]</code> 时，很可能直接命中 Cache。</p>
+<hr />
+<h2 id="4-cache-命中与-cache-缺失"><a class="markdownIt-Anchor" href="#4-cache-命中与-cache-缺失"></a> 4. Cache 命中与 Cache 缺失</h2>
+<p>CPU 访问一个地址时，会先检查所需数据是否已经在 Cache 中。</p>
+<h3 id="41-cache-命中"><a class="markdownIt-Anchor" href="#41-cache-命中"></a> 4.1 Cache 命中</h3>
+<p>如果 Cache 中已经保存了目标地址所在的主存块，就称为：</p>
+<blockquote>
+<p>Cache Hit，Cache 命中。</p>
+</blockquote>
+<p>访问流程如下：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CPU 请求地址 M</span><br><span class="line">       ↓</span><br><span class="line">Cache 中找到对应数据</span><br><span class="line">       ↓</span><br><span class="line">直接将数据交给 CPU</span><br></pre></td></tr></table></figure>
+<p>Cache 命中时，CPU 不需要访问速度较慢的主存。</p>
+<h3 id="42-cache-缺失"><a class="markdownIt-Anchor" href="#42-cache-缺失"></a> 4.2 Cache 缺失</h3>
+<p>如果 Cache 中没有保存目标数据，就称为：</p>
+<blockquote>
+<p>Cache Miss，Cache 缊失或 Cache 未命中。</p>
+</blockquote>
+<p>访问流程如下：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">CPU 请求地址 M</span><br><span class="line">       ↓</span><br><span class="line">Cache 中没有对应数据</span><br><span class="line">       ↓</span><br><span class="line">从下一层 Cache 或主存读取数据块</span><br><span class="line">       ↓</span><br><span class="line">将数据块装入 Cache</span><br><span class="line">       ↓</span><br><span class="line">把 CPU 需要的数据交给 CPU</span><br></pre></td></tr></table></figure>
+<p>因此，典型的 Cache 访问过程可以表示为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">flowchart TD</span><br><span class="line">    A([开始])</span><br><span class="line">    B[CPU 给出主存地址 M]</span><br><span class="line">    C&#123;M 所在的主存块&lt;br/&gt;是否在 Cache 中&#125;</span><br><span class="line">    D[从 Cache 中读取数据并送给 CPU]</span><br><span class="line">    E[从下一层 Cache 或主存中&lt;br/&gt;读取 M 所在的数据块]</span><br><span class="line">    F[在 Cache 中寻找可用位置]</span><br><span class="line">    G[将数据块装入 Cache]</span><br><span class="line">    H[将 M 对应的数据送给 CPU]</span><br><span class="line">    I([结束])</span><br><span class="line"></span><br><span class="line">    A --&gt; B</span><br><span class="line">    B --&gt; C</span><br><span class="line">    C --&gt;|命中| D</span><br><span class="line">    D --&gt; I</span><br><span class="line"></span><br><span class="line">    C --&gt;|缺失| E</span><br><span class="line">    E --&gt; F</span><br><span class="line">    F --&gt; G</span><br><span class="line">    G --&gt; H</span><br><span class="line">    H --&gt; I</span><br></pre></td></tr></table></figure>
+<hr />
+<h2 id="5-cache-中的数据是怎样组织的"><a class="markdownIt-Anchor" href="#5-cache-中的数据是怎样组织的"></a> 5. Cache 中的数据是怎样组织的</h2>
+<p>Cache 由多条 Cache Line 组成。</p>
+<p>一条 Cache Line 除了保存实际数据外，通常还包含一些管理信息：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">┌────────┬──────────┬────────┬─────────────────┐</span><br><span class="line">│ Valid  │   Tag    │ Dirty  │      Data       │</span><br><span class="line">│ 有效位  │   标签    │  脏位   │   实际缓存数据  │</span><br><span class="line">└────────┴──────────┴────────┴─────────────────┘</span><br></pre></td></tr></table></figure>
+<h3 id="valid有效位"><a class="markdownIt-Anchor" href="#valid有效位"></a> Valid：有效位</h3>
+<p>Valid 用于表示当前 Cache Line 中的数据是否有效。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Valid = 1：该 Cache Line 中保存着有效数据</span><br><span class="line">Valid = 0：该 Cache Line 当前无效或尚未使用</span><br></pre></td></tr></table></figure>
+<p>计算机刚启动或 Cache 刚初始化时，Cache Line 的 Valid 通常为 <code>0</code>。</p>
+<h3 id="tag标签"><a class="markdownIt-Anchor" href="#tag标签"></a> Tag：标签</h3>
+<p>Tag 用来说明：</p>
+<blockquote>
+<p>当前 Cache Line 中的数据来自主存的哪个区域。</p>
+</blockquote>
+<p>不同的主存块可能映射到 Cache 中的同一个位置，因此必须通过 Tag 判断当前保存的数据是不是 CPU 真正需要的数据。</p>
+<h3 id="dirty脏位"><a class="markdownIt-Anchor" href="#dirty脏位"></a> Dirty：脏位</h3>
+<p>Dirty 用于表示 Cache Line 中的数据是否被 CPU 修改过。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Dirty = 0：Cache 中的数据与下一层存储器一致</span><br><span class="line">Dirty = 1：Cache 中的数据已经被修改，下一层还是旧数据</span><br></pre></td></tr></table></figure>
+<p>Dirty 位主要用于写回法。</p>
+<h3 id="data数据区"><a class="markdownIt-Anchor" href="#data数据区"></a> Data：数据区</h3>
+<p>Data 是 Cache Line 中真正保存的数据，也就是从主存或下一级 Cache 复制过来的数据块。</p>
+<hr />
+<h2 id="6-cpu-地址如何在-cache-中查找数据"><a class="markdownIt-Anchor" href="#6-cpu-地址如何在-cache-中查找数据"></a> 6. CPU 地址如何在 Cache 中查找数据</h2>
+<p>CPU 给出一个内存地址后，Cache 通常会将该地址分成三部分：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">┌────────────────┬────────────────┬──────────────────┐</span><br><span class="line">│      Tag       │     Index      │  Block Offset    │</span><br><span class="line">│      标签       │      索引       │     块内偏移      │</span><br><span class="line">└────────────────┴────────────────┴──────────────────┘</span><br></pre></td></tr></table></figure>
+<p>这三部分分别负责不同的工作。</p>
+<hr />
+<h2 id="7-block-offset块内偏移"><a class="markdownIt-Anchor" href="#7-block-offset块内偏移"></a> 7. Block Offset：块内偏移</h2>
+<p>Offset 用来确定：</p>
+<blockquote>
+<p>CPU 需要的数据位于 Cache Line 内的哪个位置。</p>
+</blockquote>
+<p>假设一条 Cache Line 有 64 字节：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Cache Line：</span><br><span class="line"></span><br><span class="line">[0][1][2][3] ... [62][63]</span><br><span class="line">             ↑</span><br><span class="line">       Offset 确定位置</span><br></pre></td></tr></table></figure>
+<p>因为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">64 = 2⁶</span><br></pre></td></tr></table></figure>
+<p>所以需要 6 位二进制数才能表示一条 Cache Line 中的 64 个字节位置。</p>
+<p>因此：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Offset 位数 = 6 位</span><br></pre></td></tr></table></figure>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Offset = 000000：表示第 0 个字节</span><br><span class="line">Offset = 000001：表示第 1 个字节</span><br><span class="line">Offset = 111111：表示第 63 个字节</span><br></pre></td></tr></table></figure>
+<hr />
+<h2 id="8-index索引"><a class="markdownIt-Anchor" href="#8-index索引"></a> 8. Index：索引</h2>
+<p>Index 用来确定：</p>
+<blockquote>
+<p>CPU 应该到 Cache 的哪一组或哪一行查找数据。</p>
+</blockquote>
+<p>如果 Cache 中有 256 组，那么：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">256 = 2⁸</span><br></pre></td></tr></table></figure>
+<p>因此需要 8 位 Index。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Index 位数 = 8 位</span><br></pre></td></tr></table></figure>
+<p>CPU 得到一个内存地址后，可以直接通过 Index 定位到某一组 Cache。</p>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Index = 00000101</span><br></pre></td></tr></table></figure>
+<p>表示查找 Cache 的第 5 组。</p>
+<p>这样就不需要每次遍历整个 Cache。</p>
+<hr />
+<h2 id="9-tag标签"><a class="markdownIt-Anchor" href="#9-tag标签"></a> 9. Tag：标签</h2>
+<p>仅通过 Index 找到某一组以后，还不能确定这一组中的数据就是 CPU 所需要的数据。</p>
+<p>原因是：</p>
+<blockquote>
+<p>多个不同的主存块可能具有相同的 Index。</p>
+</blockquote>
+<p>因此，Cache 还需要比较 Tag。</p>
+<p>CPU 地址中的 Tag 会与 Cache Line 中保存的 Tag 进行比较：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">地址中的 Tag == Cache Line 中的 Tag</span><br><span class="line">                并且</span><br><span class="line">             Valid == 1</span><br></pre></td></tr></table></figure>
+<p>只有同时满足这两个条件，才能确定 Cache 命中。</p>
+<hr />
+<h2 id="10-地址拆分示例"><a class="markdownIt-Anchor" href="#10-地址拆分示例"></a> 10. 地址拆分示例</h2>
+<p>假设某个系统具有以下条件：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">地址宽度：16 位</span><br><span class="line">Cache Line：16 字节</span><br><span class="line">Cache：共有 16 组</span><br></pre></td></tr></table></figure>
+<h3 id="计算-offset-位数"><a class="markdownIt-Anchor" href="#计算-offset-位数"></a> 计算 Offset 位数</h3>
+<p>因为一条 Cache Line 是 16 字节：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">16 = 2⁴</span><br></pre></td></tr></table></figure>
+<p>所以：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Offset = 4 位</span><br></pre></td></tr></table></figure>
+<h3 id="计算-index-位数"><a class="markdownIt-Anchor" href="#计算-index-位数"></a> 计算 Index 位数</h3>
+<p>因为 Cache 有 16 组：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">16 = 2⁴</span><br></pre></td></tr></table></figure>
+<p>所以：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Index = 4 位</span><br></pre></td></tr></table></figure>
+<h3 id="计算-tag-位数"><a class="markdownIt-Anchor" href="#计算-tag-位数"></a> 计算 Tag 位数</h3>
+<p>地址总长度是 16 位：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Tag 位数 = 地址总位数 - Index 位数 - Offset 位数</span><br><span class="line">         = 16 - 4 - 4</span><br><span class="line">         = 8 位</span><br></pre></td></tr></table></figure>
+<p>最终地址结构为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">┌────────────────┬────────────┬─────────────┐</span><br><span class="line">│    Tag：8 位   │ Index：4 位 │ Offset：4 位 │</span><br><span class="line">└────────────────┴────────────┴─────────────┘</span><br></pre></td></tr></table></figure>
+<p>CPU 访问一个地址时，执行以下过程：</p>
+<ol>
+<li>使用 Index 找到对应的 Cache 组；</li>
+<li>比较该组中 Cache Line 的 Tag；</li>
+<li>检查 Valid 是否为 <code>1</code>；</li>
+<li>如果 Tag 匹配且 Valid 为 <code>1</code>，说明 Cache 命中；</li>
+<li>使用 Offset 从 Cache Line 中找到目标数据；</li>
+<li>将数据返回给 CPU。</li>
+</ol>
+<hr />
+<h2 id="11-cache-的基本查找过程"><a class="markdownIt-Anchor" href="#11-cache-的基本查找过程"></a> 11. Cache 的基本查找过程</h2>
+<p>Cache 的完整查找过程如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">flowchart TD</span><br><span class="line">    A[CPU 发出内存地址]</span><br><span class="line">    B[将地址拆分为&lt;br/&gt;Tag、Index 和 Offset]</span><br><span class="line">    C[根据 Index 定位 Cache 组]</span><br><span class="line">    D&#123;Valid 是否有效&lt;br/&gt;并且 Tag 是否匹配&#125;</span><br><span class="line"></span><br><span class="line">    E[Cache 命中]</span><br><span class="line">    F[根据 Offset&lt;br/&gt;取出目标数据]</span><br><span class="line">    G[将数据返回 CPU]</span><br><span class="line"></span><br><span class="line">    H[Cache 缺失]</span><br><span class="line">    I[访问下一层 Cache 或主存]</span><br><span class="line">    J[读取目标地址所在的整块数据]</span><br><span class="line">    K[将数据块装入 Cache]</span><br><span class="line">    L[更新 Tag 和 Valid]</span><br><span class="line">    </span><br><span class="line">    A --&gt; B</span><br><span class="line">    B --&gt; C</span><br><span class="line">    C --&gt; D</span><br><span class="line"></span><br><span class="line">    D --&gt;|是| E</span><br><span class="line">    E --&gt; F</span><br><span class="line">    F --&gt; G</span><br><span class="line"></span><br><span class="line">    D --&gt;|否| H</span><br><span class="line">    H --&gt; I</span><br><span class="line">    I --&gt; J</span><br><span class="line">    J --&gt; K</span><br><span class="line">    K --&gt; L</span><br><span class="line">    L --&gt; F</span><br></pre></td></tr></table></figure>
+<hr />
+<h2 id="12-cache-满了怎么办"><a class="markdownIt-Anchor" href="#12-cache-满了怎么办"></a> 12. Cache 满了怎么办</h2>
+<p>Cache 的容量远小于主存，因此 Cache 最终会被装满。</p>
+<p>当发生 Cache Miss，需要装入新数据，但目标位置没有空闲 Cache Line 时，就必须选择一条旧的 Cache Line 替换掉。</p>
+<p>这个过程称为：</p>
+<blockquote>
+<p>Cache Replacement，Cache 替换。</p>
+</blockquote>
+<p>常见的替换算法包括：</p>
+<h3 id="lru"><a class="markdownIt-Anchor" href="#lru"></a> LRU</h3>
+<p>LRU 的全称是 Least Recently Used，即最近最少使用。</p>
+<p>它会优先替换最长时间没有被访问的 Cache Line。</p>
+<h3 id="fifo"><a class="markdownIt-Anchor" href="#fifo"></a> FIFO</h3>
+<p>FIFO 的全称是 First In First Out，即先进先出。</p>
+<p>它会优先替换最早进入 Cache 的数据。</p>
+<h3 id="random"><a class="markdownIt-Anchor" href="#random"></a> Random</h3>
+<p>随机选择一条 Cache Line 进行替换。</p>
+<p>随机算法的硬件实现比较简单，在部分处理器中也会使用。</p>
+<h3 id="近似-lru"><a class="markdownIt-Anchor" href="#近似-lru"></a> 近似 LRU</h3>
+<p>完整实现 LRU 可能需要较多硬件资源，因此实际处理器经常使用近似 LRU 算法。</p>
+<hr />
+<h2 id="13-替换时为什么要检查-dirty"><a class="markdownIt-Anchor" href="#13-替换时为什么要检查-dirty"></a> 13. 替换时为什么要检查 Dirty</h2>
+<p>如果被替换的 Cache Line 没有被 CPU 修改：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Dirty = 0</span><br></pre></td></tr></table></figure>
+<p>说明 Cache 中的数据和下一层存储器中的数据一致，可以直接覆盖。</p>
+<p>如果：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Dirty = 1</span><br></pre></td></tr></table></figure>
+<p>说明 Cache 中的数据已经被修改，而下一层存储器中的数据还是旧数据。</p>
+<p>此时必须先执行：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">将旧 Cache Line 写回下一层存储器</span><br></pre></td></tr></table></figure>
+<p>然后才能用新的数据覆盖这条 Cache Line。</p>
+<p>流程如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">flowchart TD</span><br><span class="line">    A[发生 Cache Miss]</span><br><span class="line">    B&#123;目标位置是否存在空闲 Cache Line&#125;</span><br><span class="line">    C[直接使用空闲 Cache Line]</span><br><span class="line">    D[根据替换算法选择牺牲行]</span><br><span class="line">    E&#123;牺牲行的 Dirty 是否为 1&#125;</span><br><span class="line">    F[将旧数据写回下一层存储器]</span><br><span class="line">    G[从下一层读取新的数据块]</span><br><span class="line">    H[将新数据块装入 Cache]</span><br><span class="line">    I[更新 Tag、Valid 和 Dirty]</span><br><span class="line"></span><br><span class="line">    A --&gt; B</span><br><span class="line">    B --&gt;|有| C</span><br><span class="line">    B --&gt;|没有| D</span><br><span class="line">    D --&gt; E</span><br><span class="line">    E --&gt;|是| F</span><br><span class="line">    E --&gt;|否| G</span><br><span class="line">    F --&gt; G</span><br><span class="line">    C --&gt; G</span><br><span class="line">    G --&gt; H</span><br><span class="line">    H --&gt; I</span><br></pre></td></tr></table></figure>
+<hr />
+<h2 id="14-cache-的三种映射方式"><a class="markdownIt-Anchor" href="#14-cache-的三种映射方式"></a> 14. Cache 的三种映射方式</h2>
+<p>主存中的数据块放到 Cache 时，需要遵循一定的映射规则。</p>
+<p>常见的映射方式有：</p>
+<ol>
+<li>直接映射；</li>
+<li>全相联映射；</li>
+<li>组相联映射。</li>
+</ol>
+<hr />
+<h2 id="15-直接映射"><a class="markdownIt-Anchor" href="#15-直接映射"></a> 15. 直接映射</h2>
+<p>直接映射规定：</p>
+<blockquote>
+<p>每个主存块只能放到 Cache 中唯一确定的位置。</p>
+</blockquote>
+<p>通常可以通过下面的方式计算：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Cache 行号 = 主存块号 mod Cache 行数</span><br></pre></td></tr></table></figure>
+<p>例如，Cache 有 8 行：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">主存块 0  → Cache 行 0</span><br><span class="line">主存块 1  → Cache 行 1</span><br><span class="line">主存块 8  → Cache 行 0</span><br><span class="line">主存块 9  → Cache 行 1</span><br></pre></td></tr></table></figure>
+<p>主存块 0 和主存块 8 都只能放到 Cache 行 0。</p>
+<p>直接映射的优点是：</p>
+<ul>
+<li>硬件结构简单；</li>
+<li>查找速度快；</li>
+<li>成本较低。</li>
+</ul>
+<p>缺点是：</p>
+<ul>
+<li>不同主存块可能频繁映射到同一条 Cache Line；</li>
+<li>容易产生冲突缺失。</li>
+</ul>
+<p>例如，程序不断交替访问主存块 0 和主存块 8：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">访问块 0 → 装入 Cache 行 0</span><br><span class="line">访问块 8 → 替换 Cache 行 0</span><br><span class="line">访问块 0 → 再次替换 Cache 行 0</span><br><span class="line">访问块 8 → 再次替换 Cache 行 0</span><br></pre></td></tr></table></figure>
+<p>即使 Cache 中还有其他空闲位置，这两个主存块也不能放过去。</p>
+<hr />
+<h2 id="16-全相联映射"><a class="markdownIt-Anchor" href="#16-全相联映射"></a> 16. 全相联映射</h2>
+<p>全相联映射规定：</p>
+<blockquote>
+<p>一个主存块可以放到 Cache 中的任意一条 Cache Line。</p>
+</blockquote>
+<p>这种方式非常灵活，可以减少冲突缺失。</p>
+<p>但是 CPU 查找数据时，需要把目标 Tag 与 Cache 中所有 Cache Line 的 Tag 同时比较。</p>
+<p>优点是：</p>
+<ul>
+<li>数据块可以放到任意位置；</li>
+<li>冲突缺失较少；</li>
+<li>Cache 空间利用率较高。</li>
+</ul>
+<p>缺点是：</p>
+<ul>
+<li>需要大量并行比较电路；</li>
+<li>硬件复杂；</li>
+<li>成本较高；</li>
+<li>Cache 越大，查找难度越高。</li>
+</ul>
+<p>因此，全相联方式通常不适合直接用于容量较大的 Cache。</p>
+<hr />
+<h2 id="17-组相联映射"><a class="markdownIt-Anchor" href="#17-组相联映射"></a> 17. 组相联映射</h2>
+<p>组相联映射是直接映射和全相联映射的折中。</p>
+<p>Cache 被划分为多个组，每组包含若干条 Cache Line。</p>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">2 路组相联：每组有 2 条 Cache Line</span><br><span class="line">4 路组相联：每组有 4 条 Cache Line</span><br><span class="line">8 路组相联：每组有 8 条 Cache Line</span><br></pre></td></tr></table></figure>
+<p>主存块只能映射到一个固定的组，但可以放到该组中的任意一路。</p>
+<p>例如，一个 2 路组相联 Cache：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">第 0 组：</span><br><span class="line">    Way 0</span><br><span class="line">    Way 1</span><br><span class="line"></span><br><span class="line">第 1 组：</span><br><span class="line">    Way 0</span><br><span class="line">    Way 1</span><br><span class="line"></span><br><span class="line">第 2 组：</span><br><span class="line">    Way 0</span><br><span class="line">    Way 1</span><br></pre></td></tr></table></figure>
+<p>CPU 使用 Index 找到目标组，然后同时比较该组中所有路的 Tag。</p>
+<h3 id="三种映射方式的关系"><a class="markdownIt-Anchor" href="#三种映射方式的关系"></a> 三种映射方式的关系</h3>
+<p>直接映射可以理解为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">每组只有 1 路的组相联 Cache</span><br></pre></td></tr></table></figure>
+<p>全相联映射可以理解为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">整个 Cache 只有 1 组</span><br></pre></td></tr></table></figure>
+<p>组相联映射则位于两者之间。</p>
+<hr />
+<h2 id="18-cpu-写数据时如何处理"><a class="markdownIt-Anchor" href="#18-cpu-写数据时如何处理"></a> 18. CPU 写数据时如何处理</h2>
+<p>CPU 不仅会从 Cache 中读取数据，也会修改数据。</p>
+<p>CPU 修改 Cache 中的数据后，需要处理 Cache 与下一层存储器之间的一致性问题。</p>
+<p>常见写策略包括：</p>
+<ol>
+<li>写直达；</li>
+<li>写回。</li>
+</ol>
+<hr />
+<h2 id="19-写直达-write-through"><a class="markdownIt-Anchor" href="#19-写直达-write-through"></a> 19. 写直达 Write Through</h2>
+<p>写直达规定：</p>
+<blockquote>
+<p>CPU 修改 Cache 的同时，也立即修改下一层存储器。</p>
+</blockquote>
+<p>流程如下：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CPU 执行写操作</span><br><span class="line">      ├── 更新 Cache</span><br><span class="line">      └── 更新下一层 Cache 或主存</span><br></pre></td></tr></table></figure>
+<p>优点是：</p>
+<ul>
+<li>Cache 与下一层存储器中的数据基本保持一致；</li>
+<li>控制逻辑相对简单；</li>
+<li>Cache Line 被替换时通常不需要先写回。</li>
+</ul>
+<p>缺点是：</p>
+<ul>
+<li>每次写操作都需要访问下一层存储器；</li>
+<li>写操作延迟较大；</li>
+<li>会增加存储总线压力。</li>
+</ul>
+<p>为了减少 CPU 等待时间，写直达通常会配合写缓冲区使用。</p>
+<hr />
+<h2 id="20-写回-write-back"><a class="markdownIt-Anchor" href="#20-写回-write-back"></a> 20. 写回 Write Back</h2>
+<p>写回规定：</p>
+<blockquote>
+<p>CPU 写数据时只修改 Cache，不立即更新下一层存储器。</p>
+</blockquote>
+<p>修改后，将该 Cache Line 的 Dirty 设置为 <code>1</code>。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CPU 修改 Cache</span><br><span class="line">       ↓</span><br><span class="line">Dirty = 1</span><br></pre></td></tr></table></figure>
+<p>当这条 Cache Line 将来需要被替换时，再把整条 Cache Line 写回下一层存储器。</p>
+<p>优点是：</p>
+<ul>
+<li>多次写同一条 Cache Line 时，不必每次访问主存；</li>
+<li>可以减少下一层存储器的写入次数；</li>
+<li>能够降低总线压力；</li>
+<li>写操作通常更快。</li>
+</ul>
+<p>缺点是：</p>
+<ul>
+<li>控制逻辑更加复杂；</li>
+<li>Cache 中的数据可能比主存中的数据新；</li>
+<li>替换脏 Cache Line 时需要额外写回操作。</li>
+</ul>
+<hr />
+<h2 id="21-写缺失时如何处理"><a class="markdownIt-Anchor" href="#21-写缺失时如何处理"></a> 21. 写缺失时如何处理</h2>
+<p>CPU 写入某个地址时，如果对应数据不在 Cache 中，就发生写缺失。</p>
+<p>写缺失通常有两种处理方式。</p>
+<h3 id="写分配-write-allocate"><a class="markdownIt-Anchor" href="#写分配-write-allocate"></a> 写分配 Write Allocate</h3>
+<p>发生写缺失时，先将目标地址所在的数据块加载到 Cache，再在 Cache 中执行写操作。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">写缺失</span><br><span class="line">   ↓</span><br><span class="line">从下一层读取整块数据</span><br><span class="line">   ↓</span><br><span class="line">装入 Cache</span><br><span class="line">   ↓</span><br><span class="line">修改 Cache 中的数据</span><br></pre></td></tr></table></figure>
+<p>写分配通常与写回策略配合使用。</p>
+<h3 id="非写分配-no-write-allocate"><a class="markdownIt-Anchor" href="#非写分配-no-write-allocate"></a> 非写分配 No Write Allocate</h3>
+<p>发生写缺失时，不将数据块装入 Cache，而是直接写入下一层存储器。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">写缺失</span><br><span class="line">   ↓</span><br><span class="line">直接写下一层存储器</span><br><span class="line">   ↓</span><br><span class="line">不装入 Cache</span><br></pre></td></tr></table></figure>
+<p>非写分配通常与写直达策略配合使用。</p>
+<hr />
+<h2 id="22-l1-l2-l3-cache-如何配合"><a class="markdownIt-Anchor" href="#22-l1-l2-l3-cache-如何配合"></a> 22. L1、L2、L3 Cache 如何配合</h2>
+<p>现代 CPU 通常具有多级 Cache：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CPU → L1 Cache → L2 Cache → L3 Cache → DRAM</span><br></pre></td></tr></table></figure>
+<p>一次读操作通常按照下面的顺序执行：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">CPU 请求数据</span><br><span class="line">      ↓</span><br><span class="line">检查 L1 Cache</span><br><span class="line">      ├── 命中：返回数据</span><br><span class="line">      └── 缺失</span><br><span class="line">            ↓</span><br><span class="line">         检查 L2 Cache</span><br><span class="line">            ├── 命中：返回数据，并填入 L1</span><br><span class="line">            └── 缺失</span><br><span class="line">                  ↓</span><br><span class="line">               检查 L3 Cache</span><br><span class="line">                  ├── 命中：返回数据，并填入上层 Cache</span><br><span class="line">                  └── 缺失</span><br><span class="line">                        ↓</span><br><span class="line">                     访问 DRAM</span><br><span class="line">                        ↓</span><br><span class="line">             将整条 Cache Line 填入 Cache</span><br></pre></td></tr></table></figure>
+<h3 id="l1-cache"><a class="markdownIt-Anchor" href="#l1-cache"></a> L1 Cache</h3>
+<p>L1 Cache 的特点通常是：</p>
+<ul>
+<li>容量最小；</li>
+<li>速度最快；</li>
+<li>距离 CPU 执行核心最近；</li>
+<li>一般由单个 CPU 核心独享；</li>
+<li>经常分成指令 Cache 和数据 Cache。</li>
+</ul>
+<p>指令 Cache 用于保存 CPU 即将执行的机器指令。</p>
+<p>数据 Cache 用于保存程序使用的数据。</p>
+<h3 id="l2-cache"><a class="markdownIt-Anchor" href="#l2-cache"></a> L2 Cache</h3>
+<p>L2 Cache 通常：</p>
+<ul>
+<li>比 L1 容量大；</li>
+<li>比 L1 慢；</li>
+<li>一般仍由单个 CPU 核心独享；</li>
+<li>用于承接 L1 Cache Miss。</li>
+</ul>
+<h3 id="l3-cache"><a class="markdownIt-Anchor" href="#l3-cache"></a> L3 Cache</h3>
+<p>L3 Cache 通常：</p>
+<ul>
+<li>比 L2 容量更大；</li>
+<li>比 L2 更慢；</li>
+<li>常由多个 CPU 核心共享；</li>
+<li>用于减少对 DRAM 的访问。</li>
+</ul>
+<p>具体的 Cache 层次、容量和共享方式会因处理器型号而不同。</p>
+<hr />
+<h2 id="23-cache-缺失的主要类型"><a class="markdownIt-Anchor" href="#23-cache-缺失的主要类型"></a> 23. Cache 缺失的主要类型</h2>
+<p>Cache Miss 通常可以分为三类。</p>
+<h3 id="231-强制缺失"><a class="markdownIt-Anchor" href="#231-强制缺失"></a> 23.1 强制缺失</h3>
+<p>强制缺失也叫冷缺失。</p>
+<p>当某个数据块第一次被访问时，它不可能已经存在于 Cache 中，因此必然发生缺失。</p>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">程序第一次访问 array[0]</span><br></pre></td></tr></table></figure>
+<p>此时需要从下一层读取对应 Cache Line。</p>
+<h3 id="232-容量缺失"><a class="markdownIt-Anchor" href="#232-容量缺失"></a> 23.2 容量缺失</h3>
+<p>Cache 容量有限。</p>
+<p>如果程序在一段时间内需要访问的数据总量超过 Cache 容量，一部分数据就会被替换。</p>
+<p>当 CPU 再次访问被替换的数据时，就会发生容量缺失。</p>
+<h3 id="233-冲突缺失"><a class="markdownIt-Anchor" href="#233-冲突缺失"></a> 23.3 冲突缺失</h3>
+<p>在直接映射或组相联 Cache 中，某些主存块可能映射到同一 Cache 位置。</p>
+<p>即使 Cache 中还有其他空间，这些数据也可能互相替换，从而产生冲突缺失。</p>
+<p>提高 Cache 的相联度，可以减少冲突缺失。</p>
+<hr />
+<h2 id="24-cache-性能指标"><a class="markdownIt-Anchor" href="#24-cache-性能指标"></a> 24. Cache 性能指标</h2>
+<p>衡量 Cache 性能时，常用下面几个指标。</p>
+<h3 id="命中率"><a class="markdownIt-Anchor" href="#命中率"></a> 命中率</h3>
+<p>命中率表示 Cache 访问中命中的比例。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">命中率 = Cache 命中次数 / Cache 总访问次数</span><br></pre></td></tr></table></figure>
+<p>命中率越高，CPU 访问主存的次数通常越少。</p>
+<h3 id="缺失率"><a class="markdownIt-Anchor" href="#缺失率"></a> 缺失率</h3>
+<p>缺失率表示 Cache 访问中未命中的比例。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">缺失率 = Cache 缺失次数 / Cache 总访问次数</span><br></pre></td></tr></table></figure>
+<p>因此：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">缺失率 = 1 - 命中率</span><br></pre></td></tr></table></figure>
+<h3 id="命中时间"><a class="markdownIt-Anchor" href="#命中时间"></a> 命中时间</h3>
+<p>命中时间是：</p>
+<blockquote>
+<p>Cache 命中后，完成访问所需要的时间。</p>
+</blockquote>
+<h3 id="缺失代价"><a class="markdownIt-Anchor" href="#缺失代价"></a> 缺失代价</h3>
+<p>缺失代价是：</p>
+<blockquote>
+<p>发生 Cache Miss 后，从下一层存储器取得数据并恢复执行所需要的额外时间。</p>
+</blockquote>
+<hr />
+<h2 id="25-平均存储器访问时间"><a class="markdownIt-Anchor" href="#25-平均存储器访问时间"></a> 25. 平均存储器访问时间</h2>
+<p>Cache 的整体性能可以用平均存储器访问时间衡量。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">平均访问时间</span><br><span class="line">= Cache 命中时间</span><br><span class="line">+ Cache 缺失率 × Cache 缺失代价</span><br></pre></td></tr></table></figure>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Cache 命中时间：1 ns</span><br><span class="line">Cache 缺失率：5%</span><br><span class="line">缺失代价：100 ns</span><br></pre></td></tr></table></figure>
+<p>则：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">平均访问时间</span><br><span class="line">= 1 ns + 5% × 100 ns</span><br><span class="line">= 1 ns + 5 ns</span><br><span class="line">= 6 ns</span><br></pre></td></tr></table></figure>
+<p>虽然 Cache 的命中时间只有 1 ns，但少量 Cache Miss 仍然会明显增加平均访问时间。</p>
+<p>因此，提高命中率和降低缺失代价都非常重要。</p>
+<hr />
+<h2 id="26-cache-完整工作流程"><a class="markdownIt-Anchor" href="#26-cache-完整工作流程"></a> 26. Cache 完整工作流程</h2>
+<p>CPU 访问一个内存地址时，Cache 的完整工作过程可以概括为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">flowchart TD</span><br><span class="line">    A[CPU 发出内存访问请求]</span><br><span class="line">    B[将地址拆分为&lt;br/&gt;Tag、Index 和 Offset]</span><br><span class="line">    C[根据 Index 找到 Cache 组]</span><br><span class="line">    D[比较组内各 Cache Line 的 Tag]</span><br><span class="line">    E&#123;是否存在 Valid 为 1&lt;br/&gt;且 Tag 匹配的 Cache Line&#125;</span><br><span class="line"></span><br><span class="line">    F[Cache 命中]</span><br><span class="line">    G[根据 Offset 取出目标数据]</span><br><span class="line">    H[将数据返回 CPU]</span><br><span class="line"></span><br><span class="line">    I[Cache 缺失]</span><br><span class="line">    J&#123;目标组中是否有空闲 Cache Line&#125;</span><br><span class="line">    K[选择空闲 Cache Line]</span><br><span class="line">    L[根据替换算法选择牺牲行]</span><br><span class="line">    M&#123;牺牲行是否为脏数据&#125;</span><br><span class="line">    N[将旧数据写回下一层存储器]</span><br><span class="line">    O[从下一层 Cache 或 DRAM&lt;br/&gt;读取目标地址所在的数据块]</span><br><span class="line">    P[将数据块装入 Cache]</span><br><span class="line">    Q[更新 Tag、Valid 和 Dirty]</span><br><span class="line">    </span><br><span class="line">    A --&gt; B</span><br><span class="line">    B --&gt; C</span><br><span class="line">    C --&gt; D</span><br><span class="line">    D --&gt; E</span><br><span class="line"></span><br><span class="line">    E --&gt;|是| F</span><br><span class="line">    F --&gt; G</span><br><span class="line">    G --&gt; H</span><br><span class="line"></span><br><span class="line">    E --&gt;|否| I</span><br><span class="line">    I --&gt; J</span><br><span class="line">    J --&gt;|有空闲行| K</span><br><span class="line">    J --&gt;|没有空闲行| L</span><br><span class="line">    L --&gt; M</span><br><span class="line">    M --&gt;|是| N</span><br><span class="line">    M --&gt;|否| O</span><br><span class="line">    N --&gt; O</span><br><span class="line">    K --&gt; O</span><br><span class="line">    O --&gt; P</span><br><span class="line">    P --&gt; Q</span><br><span class="line">    Q --&gt; G</span><br></pre></td></tr></table></figure>
+<hr />
+<h2 id="27-总结"><a class="markdownIt-Anchor" href="#27-总结"></a> 27. 总结</h2>
+<p>Cache 的核心作用是利用程序的局部性，将 CPU 近期可能访问的数据提前保存在高速存储器中。</p>
+<p>CPU 访问一个地址时：</p>
+<ol>
+<li>将地址拆分为 Tag、Index 和 Offset；</li>
+<li>使用 Index 找到对应的 Cache 组；</li>
+<li>比较 Tag，并检查 Valid；</li>
+<li>如果匹配，则 Cache 命中；</li>
+<li>使用 Offset 找到 Cache Line 内的目标数据；</li>
+<li>如果没有匹配，则发生 Cache Miss；</li>
+<li>从下一层 Cache 或主存中读取整条 Cache Line；</li>
+<li>必要时按照替换算法替换旧 Cache Line；</li>
+<li>如果旧 Cache Line 是脏数据，则先写回；</li>
+<li>将新数据装入 Cache，再返回给 CPU。</li>
+</ol>
+<p>可以用一句话概括：</p>
+<blockquote>
+<p>CPU 使用 Index 查找位置，使用 Tag 验证数据身份，使用 Offset 定位块内数据；命中时直接读取，缺失时从下一层搬入一整条 Cache Line。</p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://porzlck.github.io">porzlck</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://porzlck.github.io/2026/07/17/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/Cache%E5%8F%8A%E5%85%B6%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/">https://porzlck.github.io/2026/07/17/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/Cache%E5%8F%8A%E5%85%B6%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://porzlck.github.io" target="_blank">porzlck</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/">计算机组成原理</a><a class="post-meta__tags" href="/tags/Cache/">Cache</a></div><div class="post-share"><div class="social-share" data-image="/img/author.jpg" data-sites="qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width no-desc" href="/2026/07/17/codeforces/Deltix%20Round,%20Spring%202021%20D/" title="Deltix Round, Spring 2021 D 随机化+子集DP"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Deltix Round, Spring 2021 D 随机化+子集DP</div></div></div></a></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/author.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">porzlck</div><div class="author-info-description">记录算法、数学与计算机学习</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">51</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">77</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">留言、评论需要登陆 Github 账号</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#cache-%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="toc-number">1.</span> <span class="toc-text"> Cache 工作原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81-cache"><span class="toc-number">1.1.</span> <span class="toc-text"> 1. 为什么需要 Cache</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-cache-%E4%BF%9D%E5%AD%98%E7%9A%84%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">1.2.</span> <span class="toc-text"> 2. Cache 保存的是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E7%A8%8B%E5%BA%8F%E7%9A%84%E5%B1%80%E9%83%A8%E6%80%A7%E5%8E%9F%E7%90%86"><span class="toc-number">1.3.</span> <span class="toc-text"> 3. 程序的局部性原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#31-%E6%97%B6%E9%97%B4%E5%B1%80%E9%83%A8%E6%80%A7"><span class="toc-number">1.3.1.</span> <span class="toc-text"> 3.1 时间局部性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#32-%E7%A9%BA%E9%97%B4%E5%B1%80%E9%83%A8%E6%80%A7"><span class="toc-number">1.3.2.</span> <span class="toc-text"> 3.2 空间局部性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-cache-%E5%91%BD%E4%B8%AD%E4%B8%8E-cache-%E7%BC%BA%E5%A4%B1"><span class="toc-number">1.4.</span> <span class="toc-text"> 4. Cache 命中与 Cache 缺失</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#41-cache-%E5%91%BD%E4%B8%AD"><span class="toc-number">1.4.1.</span> <span class="toc-text"> 4.1 Cache 命中</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#42-cache-%E7%BC%BA%E5%A4%B1"><span class="toc-number">1.4.2.</span> <span class="toc-text"> 4.2 Cache 缺失</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-cache-%E4%B8%AD%E7%9A%84%E6%95%B0%E6%8D%AE%E6%98%AF%E6%80%8E%E6%A0%B7%E7%BB%84%E7%BB%87%E7%9A%84"><span class="toc-number">1.5.</span> <span class="toc-text"> 5. Cache 中的数据是怎样组织的</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#valid%E6%9C%89%E6%95%88%E4%BD%8D"><span class="toc-number">1.5.1.</span> <span class="toc-text"> Valid：有效位</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tag%E6%A0%87%E7%AD%BE"><span class="toc-number">1.5.2.</span> <span class="toc-text"> Tag：标签</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#dirty%E8%84%8F%E4%BD%8D"><span class="toc-number">1.5.3.</span> <span class="toc-text"> Dirty：脏位</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#data%E6%95%B0%E6%8D%AE%E5%8C%BA"><span class="toc-number">1.5.4.</span> <span class="toc-text"> Data：数据区</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-cpu-%E5%9C%B0%E5%9D%80%E5%A6%82%E4%BD%95%E5%9C%A8-cache-%E4%B8%AD%E6%9F%A5%E6%89%BE%E6%95%B0%E6%8D%AE"><span class="toc-number">1.6.</span> <span class="toc-text"> 6. CPU 地址如何在 Cache 中查找数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-block-offset%E5%9D%97%E5%86%85%E5%81%8F%E7%A7%BB"><span class="toc-number">1.7.</span> <span class="toc-text"> 7. Block Offset：块内偏移</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-index%E7%B4%A2%E5%BC%95"><span class="toc-number">1.8.</span> <span class="toc-text"> 8. Index：索引</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-tag%E6%A0%87%E7%AD%BE"><span class="toc-number">1.9.</span> <span class="toc-text"> 9. Tag：标签</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E5%9C%B0%E5%9D%80%E6%8B%86%E5%88%86%E7%A4%BA%E4%BE%8B"><span class="toc-number">1.10.</span> <span class="toc-text"> 10. 地址拆分示例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97-offset-%E4%BD%8D%E6%95%B0"><span class="toc-number">1.10.1.</span> <span class="toc-text"> 计算 Offset 位数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97-index-%E4%BD%8D%E6%95%B0"><span class="toc-number">1.10.2.</span> <span class="toc-text"> 计算 Index 位数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97-tag-%E4%BD%8D%E6%95%B0"><span class="toc-number">1.10.3.</span> <span class="toc-text"> 计算 Tag 位数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-cache-%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%9F%A5%E6%89%BE%E8%BF%87%E7%A8%8B"><span class="toc-number">1.11.</span> <span class="toc-text"> 11. Cache 的基本查找过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-cache-%E6%BB%A1%E4%BA%86%E6%80%8E%E4%B9%88%E5%8A%9E"><span class="toc-number">1.12.</span> <span class="toc-text"> 12. Cache 满了怎么办</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#lru"><span class="toc-number">1.12.1.</span> <span class="toc-text"> LRU</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#fifo"><span class="toc-number">1.12.2.</span> <span class="toc-text"> FIFO</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#random"><span class="toc-number">1.12.3.</span> <span class="toc-text"> Random</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%91%E4%BC%BC-lru"><span class="toc-number">1.12.4.</span> <span class="toc-text"> 近似 LRU</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-%E6%9B%BF%E6%8D%A2%E6%97%B6%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%A3%80%E6%9F%A5-dirty"><span class="toc-number">1.13.</span> <span class="toc-text"> 13. 替换时为什么要检查 Dirty</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-cache-%E7%9A%84%E4%B8%89%E7%A7%8D%E6%98%A0%E5%B0%84%E6%96%B9%E5%BC%8F"><span class="toc-number">1.14.</span> <span class="toc-text"> 14. Cache 的三种映射方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-%E7%9B%B4%E6%8E%A5%E6%98%A0%E5%B0%84"><span class="toc-number">1.15.</span> <span class="toc-text"> 15. 直接映射</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#16-%E5%85%A8%E7%9B%B8%E8%81%94%E6%98%A0%E5%B0%84"><span class="toc-number">1.16.</span> <span class="toc-text"> 16. 全相联映射</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#17-%E7%BB%84%E7%9B%B8%E8%81%94%E6%98%A0%E5%B0%84"><span class="toc-number">1.17.</span> <span class="toc-text"> 17. 组相联映射</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E7%A7%8D%E6%98%A0%E5%B0%84%E6%96%B9%E5%BC%8F%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">1.17.1.</span> <span class="toc-text"> 三种映射方式的关系</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#18-cpu-%E5%86%99%E6%95%B0%E6%8D%AE%E6%97%B6%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86"><span class="toc-number">1.18.</span> <span class="toc-text"> 18. CPU 写数据时如何处理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#19-%E5%86%99%E7%9B%B4%E8%BE%BE-write-through"><span class="toc-number">1.19.</span> <span class="toc-text"> 19. 写直达 Write Through</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#20-%E5%86%99%E5%9B%9E-write-back"><span class="toc-number">1.20.</span> <span class="toc-text"> 20. 写回 Write Back</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#21-%E5%86%99%E7%BC%BA%E5%A4%B1%E6%97%B6%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86"><span class="toc-number">1.21.</span> <span class="toc-text"> 21. 写缺失时如何处理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%99%E5%88%86%E9%85%8D-write-allocate"><span class="toc-number">1.21.1.</span> <span class="toc-text"> 写分配 Write Allocate</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%9E%E5%86%99%E5%88%86%E9%85%8D-no-write-allocate"><span class="toc-number">1.21.2.</span> <span class="toc-text"> 非写分配 No Write Allocate</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#22-l1-l2-l3-cache-%E5%A6%82%E4%BD%95%E9%85%8D%E5%90%88"><span class="toc-number">1.22.</span> <span class="toc-text"> 22. L1、L2、L3 Cache 如何配合</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#l1-cache"><span class="toc-number">1.22.1.</span> <span class="toc-text"> L1 Cache</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#l2-cache"><span class="toc-number">1.22.2.</span> <span class="toc-text"> L2 Cache</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#l3-cache"><span class="toc-number">1.22.3.</span> <span class="toc-text"> L3 Cache</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#23-cache-%E7%BC%BA%E5%A4%B1%E7%9A%84%E4%B8%BB%E8%A6%81%E7%B1%BB%E5%9E%8B"><span class="toc-number">1.23.</span> <span class="toc-text"> 23. Cache 缺失的主要类型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#231-%E5%BC%BA%E5%88%B6%E7%BC%BA%E5%A4%B1"><span class="toc-number">1.23.1.</span> <span class="toc-text"> 23.1 强制缺失</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#232-%E5%AE%B9%E9%87%8F%E7%BC%BA%E5%A4%B1"><span class="toc-number">1.23.2.</span> <span class="toc-text"> 23.2 容量缺失</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#233-%E5%86%B2%E7%AA%81%E7%BC%BA%E5%A4%B1"><span class="toc-number">1.23.3.</span> <span class="toc-text"> 23.3 冲突缺失</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#24-cache-%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87"><span class="toc-number">1.24.</span> <span class="toc-text"> 24. Cache 性能指标</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E4%B8%AD%E7%8E%87"><span class="toc-number">1.24.1.</span> <span class="toc-text"> 命中率</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%BA%E5%A4%B1%E7%8E%87"><span class="toc-number">1.24.2.</span> <span class="toc-text"> 缺失率</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E4%B8%AD%E6%97%B6%E9%97%B4"><span class="toc-number">1.24.3.</span> <span class="toc-text"> 命中时间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%BA%E5%A4%B1%E4%BB%A3%E4%BB%B7"><span class="toc-number">1.24.4.</span> <span class="toc-text"> 缺失代价</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#25-%E5%B9%B3%E5%9D%87%E5%AD%98%E5%82%A8%E5%99%A8%E8%AE%BF%E9%97%AE%E6%97%B6%E9%97%B4"><span class="toc-number">1.25.</span> <span class="toc-text"> 25. 平均存储器访问时间</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#26-cache-%E5%AE%8C%E6%95%B4%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="toc-number">1.26.</span> <span class="toc-text"> 26. Cache 完整工作流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#27-%E6%80%BB%E7%BB%93"><span class="toc-number">1.27.</span> <span class="toc-text"> 27. 总结</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/17/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/Cache%E5%8F%8A%E5%85%B6%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" title="Cache及其工作原理">Cache及其工作原理</a><time datetime="2026-07-17T14:00:00.000Z" title="发表于 2026-07-17 22:00:00">2026-07-17</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/17/codeforces/Deltix%20Round,%20Spring%202021%20D/" title="Deltix Round, Spring 2021 D 随机化+子集DP">Deltix Round, Spring 2021 D 随机化+子集DP</a><time datetime="2026-07-17T12:00:00.000Z" title="发表于 2026-07-17 20:00:00">2026-07-17</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/16/codeforces/Codeforces%20Round%20112%20(Div.%202)%20E/" title="Codeforces Round 112 (Div.2) E题解">Codeforces Round 112 (Div.2) E题解</a><time datetime="2026-07-16T07:00:00.000Z" title="发表于 2026-07-16 15:00:00">2026-07-16</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/15/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/Virtual%20Memory/" title="CSAPP 虚拟内存">CSAPP 虚拟内存</a><time datetime="2026-07-15T12:00:00.000Z" title="发表于 2026-07-15 20:00:00">2026-07-15</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/13/luogu/%E4%B8%A4%E9%81%93%E5%9B%9E%E6%BB%9A%E8%8E%AB%E9%98%9F%E9%A2%98/" title="两道回滚莫队题">两道回滚莫队题</a><time datetime="2026-07-13T04:00:00.000Z" title="发表于 2026-07-13 12:00:00">2026-07-13</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2026 By porzlck</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.1</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.4</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.4"></script><script src="/js/main.js?v=5.5.4"></script><div class="js-pjax"><script>(async () => {
+  const showKatex = () => {
+    document.querySelectorAll('#article-container .katex').forEach(el => el.classList.add('katex-show'))
+  }
+
+  if (!window.katex_js_css) {
+    window.katex_js_css = true
+    await btf.getCSS('https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/katex.min.css')
+    if (false) {
+      await btf.getScript('https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/contrib/copy-tex.min.js')
+    }
+  }
+
+  showKatex()
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = {"data-mapping":"pathname","data-strict":0,"data-reactions-enabled":1,"data-emit-metadata":0,"data-input-position":"bottom","data-lang":"zh-CN"}
+
+  const getGiscusTheme = theme => theme === 'dark' ? 'dark' : 'light'
+
+  const createScriptElement = config => {
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => {
+      ele.setAttribute(key, value)
+    })
+    return ele
+  }
+
+  const loadGiscus = (el = document, key) => {
+    const mappingConfig = isShuoshuo
+      ? { 'data-mapping': 'specific', 'data-term': key }
+      : { 'data-mapping': (option && option['data-mapping']) || 'pathname' }
+
+    const giscusConfig = {
+      src: 'https://giscus.app/client.js',
+      'data-repo': 'porzlck/porzlck.github.io',
+      'data-repo-id': 'R_kgDORlsOOQ',
+      'data-category-id': 'DIC_kwDORlsOOc4C4bLH',
+      'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+      'data-reactions-enabled': '1',
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      ...mappingConfig
+    }
+
+    const scriptElement = createScriptElement(giscusConfig)
+
+    el.querySelector('#giscus-wrap').appendChild(scriptElement)
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGiscus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const changeGiscusTheme = theme => {
+    const iframe = document.querySelector('#giscus-wrap iframe')
+    if (iframe) {
+      const message = {
+        giscus: {
+          setConfig: {
+            theme: getGiscusTheme(theme)
+          }
+        }
+      }
+      iframe.contentWindow.postMessage(message, 'https://giscus.app')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeGiscusTheme, 'giscus')
+
+  if (isShuoshuo) {
+    'Giscus' === 'Giscus'
+      ? window.shuoshuoComment = { loadComment: loadGiscus }
+      : window.loadOtherComment = loadGiscus
+    return
+  }
+
+  if ('Giscus' === 'Giscus' || !false) {
+    if (false) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
+    else loadGiscus()
+  } else {
+    window.loadOtherComment = loadGiscus
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="请输入关键词" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>
