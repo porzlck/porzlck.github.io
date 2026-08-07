@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>扩展操作码动画演示</title>
+<style>
+  :root{
+    --bg:#0b1020;
+    --panel:#131a2d;
+    --text:#eef2ff;
+    --muted:#aab4d6;
+    --good:#4ade80;
+    --warn:#fbbf24;
+    --accent:#60a5fa;
+    --danger:#fb7185;
+    --line:#334155;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    background:linear-gradient(180deg,#0b1020,#111827);
+    color:var(--text);
+    min-height:100vh;
+  }
+  .wrap{max-width:1100px;margin:0 auto;padding:28px 18px 60px}
+  h1{font-size:clamp(26px,4vw,42px);margin:0 0 8px}
+  .sub{color:var(--muted);font-size:16px;line-height:1.8}
+  .card{
+    background:rgba(19,26,45,.92);
+    border:1px solid #26324d;
+    border-radius:18px;
+    padding:20px;
+    margin-top:18px;
+    box-shadow:0 12px 35px rgba(0,0,0,.25);
+  }
+  .question{font-size:18px;line-height:1.8}
+  .question b{color:#fff}
+  .bitbar{
+    display:grid;
+    grid-template-columns:repeat(16,1fr);
+    gap:4px;
+    margin:18px 0;
+  }
+  .bit{
+    height:54px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:8px;
+    border:1px solid rgba(255,255,255,.12);
+    font-weight:700;
+    transition:all .5s ease;
+    transform-origin:center;
+  }
+  .op{background:#1d4ed8}
+  .addr{background:#475569}
+  .free{background:#7c3aed}
+  .pulse{animation:pulse .9s ease}
+  @keyframes pulse{
+    0%{transform:scale(.92);filter:brightness(.85)}
+    50%{transform:scale(1.08);filter:brightness(1.35)}
+    100%{transform:scale(1)}
+  }
+  .labels{
+    display:grid;
+    grid-template-columns:repeat(16,1fr);
+    gap:4px;
+    margin-top:-10px;
+    color:var(--muted);
+    font-size:12px;
+    text-align:center;
+  }
+  .explain{
+    display:grid;
+    grid-template-columns:1.1fr .9fr;
+    gap:16px;
+  }
+  @media(max-width:800px){.explain{grid-template-columns:1fr}}
+  .big{
+    font-size:clamp(28px,5vw,54px);
+    font-weight:800;
+    letter-spacing:-1px;
+    margin:8px 0;
+  }
+  .formula{
+    font-size:24px;
+    padding:16px;
+    border-radius:14px;
+    background:#0f172a;
+    border:1px solid #29364f;
+    text-align:center;
+  }
+  .tree{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .node{
+    padding:10px 14px;
+    border-radius:12px;
+    background:#0f172a;
+    border:1px solid #334155;
+    min-width:180px;
+  }
+  .arrow{color:var(--muted);font-size:22px}
+  .remain{color:var(--warn);font-weight:800}
+  .used{color:var(--good);font-weight:800}
+  .controls{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:18px;
+  }
+  button{
+    border:0;
+    border-radius:12px;
+    padding:12px 18px;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    color:white;
+    background:#2563eb;
+  }
+  button.secondary{background:#334155}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  .progress{
+    height:8px;
+    background:#1e293b;
+    border-radius:999px;
+    overflow:hidden;
+    margin:14px 0 0;
+  }
+  .progress > div{
+    height:100%;
+    width:0;
+    background:linear-gradient(90deg,#3b82f6,#8b5cf6);
+    transition:width .4s ease;
+  }
+  .stage-title{font-size:24px;font-weight:800;margin-bottom:8px}
+  .stage-text{color:#dbe4ff;line-height:1.85;font-size:17px}
+  .hint{
+    background:#172554;
+    border:1px solid #1d4ed8;
+    border-radius:12px;
+    padding:14px;
+    line-height:1.7;
+  }
+  .final{
+    display:none;
+    margin-top:14px;
+    padding:18px;
+    border-radius:14px;
+    background:#052e16;
+    border:1px solid #16a34a;
+    font-size:22px;
+    font-weight:800;
+  }
+  .tag{display:inline-block;padding:3px 8px;border-radius:999px;font-size:12px;background:#29364f;color:#cdd8f8}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>扩展操作码：16 位指令为什么最后还能有 16 条零地址指令？</h1>
+  <div class="sub">把它想成“地址位腾出来以后，继续拿来当操作码”。点“下一步”看动画。</div>
+
+  <div class="card question">
+    <b>题目：</b>16 位定长指令，地址码 4 位；三地址、二地址、一地址指令分别有 15、8、127 条。问零地址指令最多多少条？
+  </div>
+
+  <div class="card">
+    <div class="stage-title" id="stageTitle">第 1 步：先看三地址指令</div>
+    <div class="stage-text" id="stageText"></div>
+
+    <div class="bitbar" id="bitbar"></div>
+    <div class="labels" id="labels"></div>
+
+    <div class="progress"><div id="prog"></div></div>
+
+    <div class="controls">
+      <button class="secondary" id="prev">← 上一步</button>
+      <button id="next">下一步 →</button>
+      <button class="secondary" id="auto">自动播放</button>
+      <button class="secondary" id="reset">重新开始</button>
+    </div>
+  </div>
+
+  <div class="card explain">
+    <div>
+      <div class="tag">核心变化</div>
+      <div class="big" id="bigNum">16 种</div>
+      <div class="formula" id="formula">2⁴ = 16</div>
+    </div>
+    <div class="tree" id="tree"></div>
+  </div>
+
+  <div class="card hint">
+    <b>只记这一句：</b> 每少一个 4 位地址，就多出 4 位可以扩展操作码；因此“剩下的每 1 个旧编码”都能裂变成 <b>2⁴ = 16</b> 个新编码。
+  </div>
+
+  <div class="final" id="finalBox">答案：16 条（B）</div>
+</div>
+
+<script>
+const stages = [
+  {
+    title:"第 1 步：三地址指令",
+    text:"16 位指令里放 3 个地址，每个地址 4 位，所以地址一共占 12 位，只剩 4 位做操作码。4 位操作码共有 2⁴ = 16 种。题目用了 15 种，因此只剩 1 种编码。",
+    opBits:4, addrBits:12, freeBits:0,
+    big:"16 种 → 剩 1 种",
+    formula:"2⁴ = 16；16 - 15 = 1",
+    rows:[
+      ["三地址可编码","16 种"],
+      ["已用三地址","15 种"],
+      ["剩余","1 种"]
+    ]
+  },
+  {
+    title:"第 2 步：把剩下的 1 种扩成二地址指令",
+    text:"二地址比三地址少 1 个地址，于是腾出 4 位。这 4 位不浪费，接到操作码后面。刚才剩下的 1 种前缀，现在后面再跟 4 位，就能分成 1 × 2⁴ = 16 种二地址编码。",
+    opBits:8, addrBits:8, freeBits:0,
+    big:"1 × 16 = 16 种",
+    formula:"1 × 2⁴ = 16",
+    rows:[
+      ["上一步剩余","1 种"],
+      ["每种再扩展","× 16"],
+      ["二地址可编码","16 种"]
+    ]
+  },
+  {
+    title:"第 3 步：二地址用了 8 条，还剩 8 种",
+    text:"题目说二地址指令用了 8 条，所以 16 种里还剩 8 种。这 8 种继续留给下一层扩展。",
+    opBits:8, addrBits:8, freeBits:0,
+    big:"16 - 8 = 8 种",
+    formula:"16 - 8 = 8",
+    rows:[
+      ["二地址可编码","16 种"],
+      ["已用二地址","8 种"],
+      ["剩余","8 种"]
+    ]
+  },
+  {
+    title:"第 4 步：8 种继续扩成一地址指令",
+    text:"一地址又比二地址少 1 个地址，所以又腾出 4 位。每个剩余编码又能裂变成 16 个，因此 8 × 16 = 128 种一地址编码。",
+    opBits:12, addrBits:4, freeBits:0,
+    big:"8 × 16 = 128 种",
+    formula:"8 × 2⁴ = 128",
+    rows:[
+      ["上一步剩余","8 种"],
+      ["每种再扩展","× 16"],
+      ["一地址可编码","128 种"]
+    ]
+  },
+  {
+    title:"第 5 步：一地址用了 127 条，还剩 1 种",
+    text:"题目给出一地址指令有 127 条，所以 128 种编码里只剩 1 种。这个最后的 1 种还可以继续往零地址扩展。",
+    opBits:12, addrBits:4, freeBits:0,
+    big:"128 - 127 = 1 种",
+    formula:"128 - 127 = 1",
+    rows:[
+      ["一地址可编码","128 种"],
+      ["已用一地址","127 种"],
+      ["剩余","1 种"]
+    ]
+  },
+  {
+    title:"第 6 步：零地址没有地址字段，最后 4 位全部拿来扩操作码",
+    text:"零地址比一地址又少 1 个 4 位地址，因此最后这 4 位全部变成操作码。刚才剩的 1 种编码，又能裂变成 2⁴ = 16 种零地址指令。",
+    opBits:16, addrBits:0, freeBits:0,
+    big:"1 × 16 = 16 条",
+    formula:"1 × 2⁴ = 16",
+    rows:[
+      ["上一步剩余","1 种"],
+      ["最后 4 位扩展","× 16"],
+      ["零地址最多","16 条"]
+    ]
+  }
+];
+
+let idx = 0;
+let timer = null;
+
+function renderBits(stage){
+  const bar = document.getElementById("bitbar");
+  const labels = document.getElementById("labels");
+  bar.innerHTML = "";
+  labels.innerHTML = "";
+  for(let i=0;i<16;i++){
+    const d=document.createElement("div");
+    d.className="bit pulse " + (i < stage.opBits ? "op" : "addr");
+    d.textContent = i < stage.opBits ? "OP" : "A";
+    bar.appendChild(d);
+
+    const l=document.createElement("div");
+    l.textContent=(i+1);
+    labels.appendChild(l);
+  }
+}
+
+function renderTree(rows){
+  const tree=document.getElementById("tree");
+  tree.innerHTML="";
+  rows.forEach((r,i)=>{
+    const row=document.createElement("div");
+    row.className="row";
+    const node=document.createElement("div");
+    node.className="node";
+    const isLast=i===rows.length-1;
+    node.innerHTML=`<div style="color:#aab4d6;font-size:13px">${r[0]}</div>
+                    <div class="${isLast?'remain':'used'}" style="font-size:22px;margin-top:4px">${r[1]}</div>`;
+    row.appendChild(node);
+    if(i<rows.length-1){
+      const arrow=document.createElement("div");
+      arrow.className="arrow";
+      arrow.textContent="↓";
+      row.appendChild(arrow);
+    }
+    tree.appendChild(row);
+  });
+}
+
+function render(){
+  const s=stages[idx];
+  document.getElementById("stageTitle").textContent=s.title;
+  document.getElementById("stageText").textContent=s.text;
+  document.getElementById("bigNum").textContent=s.big;
+  document.getElementById("formula").textContent=s.formula;
+  document.getElementById("prog").style.width=((idx+1)/stages.length*100)+"%";
+  document.getElementById("prev").disabled=idx===0;
+  document.getElementById("next").disabled=idx===stages.length-1;
+  document.getElementById("finalBox").style.display=idx===stages.length-1?"block":"none";
+  renderBits(s);
+  renderTree(s.rows);
+}
+
+document.getElementById("next").onclick=()=>{ if(idx<stages.length-1){idx++;render();}};
+document.getElementById("prev").onclick=()=>{ if(idx>0){idx--;render();}};
+document.getElementById("reset").onclick=()=>{idx=0;clearInterval(timer);timer=null;document.getElementById("auto").textContent="自动播放";render();};
+document.getElementById("auto").onclick=()=>{
+  const btn=document.getElementById("auto");
+  if(timer){clearInterval(timer);timer=null;btn.textContent="自动播放";return;}
+  if(idx===stages.length-1) idx=0;
+  render();
+  btn.textContent="暂停播放";
+  timer=setInterval(()=>{
+    if(idx<stages.length-1){idx++;render();}
+    else{clearInterval(timer);timer=null;btn.textContent="自动播放";}
+  },2200);
+};
+render();
+</script>
+</body>
+</html>
