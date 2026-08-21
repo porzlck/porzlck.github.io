@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>恢复余数法除法运算器 · 桌面控制面板版</title>
+<style>
+  :root{
+    --bg:#f5f3ef;
+    --card:#fffdfa;
+    --line:#d8d1c8;
+    --line-strong:#81776d;
+    --text:#262320;
+    --muted:#6e6760;
+    --accent:#725d4b;
+    --accent-soft:#efe6dc;
+    --good:#2f6b4d;
+    --good-bg:#eaf4ee;
+    --bad:#964646;
+    --bad-bg:#f8ecec;
+  }
+
+  *{box-sizing:border-box}
+
+  html,body{
+    width:100%;
+    height:100%;
+    margin:0;
+    overflow:hidden;
+  }
+
+  body{
+    font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+    color:var(--text);
+    background:var(--bg);
+    font-size:13px;
+  }
+
+  button,input,select{font:inherit}
+  button{cursor:pointer}
+
+  .app{
+    width:100%;
+    height:100vh;
+    padding:10px 12px;
+    display:grid;
+    grid-template-rows:auto auto auto minmax(0,1fr) 32px;
+    gap:8px;
+    overflow:hidden;
+  }
+
+  .topbar{
+    min-height:0;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+  }
+
+  .title{min-width:0}
+  .title h1{
+    margin:0;
+    font-size:clamp(20px,1.5vw,28px);
+    line-height:1.15;
+    font-weight:800;
+  }
+
+  .controls{
+    min-height:0;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:9px 10px;
+    display:grid;
+    grid-template-columns:minmax(180px,1fr) minmax(180px,1fr) 130px auto;
+    gap:9px;
+    align-items:end;
+  }
+
+  .field{min-width:0}
+  .field label{
+    display:block;
+    margin:0 0 4px;
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.1;
+  }
+  .field input,.field select{
+    display:block;
+    width:100%;
+    height:40px;
+    border:1px solid var(--line);
+    border-radius:9px;
+    background:#fff;
+    color:var(--text);
+    padding:0 10px;
+    outline:none;
+  }
+  .field input:focus,.field select:focus{
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px rgba(114,93,75,.10);
+  }
+
+  .action-row{
+    min-width:0;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:7px;
+  }
+  .btn{
+    height:40px;
+    border:1px solid var(--line);
+    border-radius:9px;
+    padding:0 12px;
+    white-space:nowrap;
+    background:#fff;
+    color:var(--text);
+  }
+  .btn.primary{
+    background:var(--accent);
+    color:#fff;
+    border-color:var(--accent);
+  }
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+
+  .statusbar{
+    min-height:0;
+    display:grid;
+    grid-template-columns:repeat(6,minmax(0,1fr));
+    gap:8px;
+  }
+  .stat{
+    min-width:0;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:7px 10px;
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr);
+    align-items:center;
+    gap:8px;
+  }
+  .stat .k{
+    color:var(--muted);
+    font-size:11px;
+    white-space:nowrap;
+  }
+  .stat .v{
+    min-width:0;
+    text-align:right;
+    font-size:15px;
+    line-height:1.1;
+    font-weight:750;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .workspace{
+    min-height:0;
+    overflow:hidden;
+    display:grid;
+    grid-template-columns:minmax(0,72fr) minmax(300px,28fr);
+    gap:10px;
+  }
+
+  .card{
+    min-height:0;
+    overflow:hidden;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:12px;
+  }
+
+  .machine-card{
+    display:grid;
+    grid-template-rows:34px minmax(0,1fr);
+  }
+  .card-head{
+    min-width:0;
+    padding:0 12px;
+    border-bottom:1px solid #ebe4db;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .card-head h2{
+    margin:0;
+    font-size:16px;
+    line-height:1;
+  }
+  .small{
+    min-width:0;
+    color:var(--muted);
+    font-size:12px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .machine-wrap{
+    min-height:0;
+    overflow:hidden;
+    padding:8px 10px 9px;
+  }
+
+  .machine{
+    min-width:0;
+    min-height:0;
+    height:100%;
+    overflow:hidden;
+    border:1px solid #e0dad3;
+    border-radius:10px;
+    padding:8px 10px;
+    background:
+      linear-gradient(rgba(255,255,255,.74),rgba(250,247,242,.86)),
+      repeating-linear-gradient(0deg,transparent 0 31px,rgba(97,86,76,.03) 32px);
+    display:grid;
+    grid-template-columns:minmax(150px,1fr) minmax(260px,1.22fr) minmax(150px,1fr);
+    grid-template-rows:auto 18px auto 18px auto;
+    align-content:space-between;
+    grid-template-areas:
+      "y y y"
+      ". arrowY ."
+      "info alu ctrl"
+      ". arrowR ."
+      "rq rq rq";
+    column-gap:10px;
+    row-gap:6px;
+    align-items:stretch;
+  }
+
+  .node{
+    min-width:0;
+    min-height:0;
+    overflow:hidden;
+    background:#fff;
+    border:2px solid var(--line-strong);
+    border-radius:10px;
+    padding:8px 10px;
+    transition:border-color .18s ease, box-shadow .18s ease, background .18s ease;
+  }
+  .node h3{
+    margin:0 0 3px;
+    font-size:15px;
+    line-height:1.15;
+  }
+  .node p{
+    margin:0;
+    font-size:12px;
+    line-height:1.35;
+    color:var(--muted);
+  }
+  .node.active{
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px rgba(114,93,75,.10);
+  }
+  .node.good{
+    border-color:var(--good);
+    box-shadow:0 0 0 3px rgba(47,107,77,.10);
+  }
+  .node.bad{
+    border-color:var(--bad);
+    box-shadow:0 0 0 3px rgba(150,70,70,.10);
+  }
+
+  .y-node{
+    grid-area:y;
+    justify-self:center;
+    width:min(58%,560px);
+    align-self:start;
+  }
+  .info-node{grid-area:info;align-self:center}
+  .alu-node{grid-area:alu;align-self:center;text-align:center}
+  .ctrl-node{grid-area:ctrl;align-self:center}
+  .rq-node{
+    grid-area:rq;
+    justify-self:center;
+    width:min(78%,780px);
+    align-self:end;
+  }
+
+  .alu-shape{
+    width:min(150px,70%);
+    height:48px;
+    margin:5px auto 4px;
+    display:grid;
+    place-items:center;
+    background:#f2ebe2;
+    clip-path:polygon(10% 0,90% 0,74% 100%,26% 100%);
+    font-size:22px;
+    line-height:1;
+    font-weight:800;
+  }
+  .alu-op{
+    color:var(--muted);
+    font:12px/1.2 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .reg{
+    min-width:0;
+    display:grid;
+    grid-template-columns:30px minmax(0,1fr);
+    gap:6px;
+    align-items:center;
+    margin-top:6px;
+  }
+  .reg-label{
+    text-align:center;
+    font:700 13px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  .bits{
+    min-width:0;
+    width:100%;
+    display:flex;
+    flex-wrap:nowrap;
+    gap:3px;
+  }
+  .bit{
+    min-width:0;
+    flex:1 1 0;
+    height:26px;
+    border:1px solid var(--line);
+    border-radius:6px;
+    background:#fff;
+    display:grid;
+    place-items:center;
+    font:700 12px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  .bit.hot{background:var(--accent-soft);border-color:var(--accent)}
+  .bit.good{background:var(--good-bg);border-color:var(--good);color:var(--good)}
+  .bit.bad{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
+
+  .flow-link{
+    min-height:0;
+    position:relative;
+    justify-self:center;
+    align-self:stretch;
+    width:100%;
+  }
+  .flow-link::before{
+    content:"";
+    position:absolute;
+    top:0;
+    bottom:4px;
+    left:50%;
+    width:2px;
+    transform:translateX(-50%);
+    background:var(--line-strong);
+    opacity:.82;
+  }
+  .flow-link::after{
+    content:"";
+    position:absolute;
+    bottom:0;
+    left:50%;
+    transform:translateX(-50%);
+    border:5px solid transparent;
+    border-top:6px solid var(--line-strong);
+    border-bottom:0;
+  }
+  .arrow-y{grid-area:arrowY}
+  .arrow-r{grid-area:arrowR}
+  .flow-label{
+    position:absolute;
+    left:calc(50% + 7px);
+    top:50%;
+    transform:translateY(-50%);
+    padding:1px 4px;
+    border-radius:4px;
+    background:#fbf8f4;
+    color:var(--muted);
+    font-size:10px;
+    line-height:1.2;
+    white-space:nowrap;
+  }
+
+  .shift-banner{
+    margin-top:6px;
+    border:1px dashed var(--line-strong);
+    border-radius:7px;
+    padding:4px 7px;
+    background:#faf8f4;
+    color:var(--muted);
+    font-size:11px;
+    line-height:1.2;
+    text-align:center;
+  }
+  .shift-banner.active{
+    color:var(--accent);
+    border-color:var(--accent);
+    background:var(--accent-soft);
+  }
+
+  .side{
+    min-height:0;
+    overflow:hidden;
+    padding:8px;
+    display:grid;
+    grid-template-rows:minmax(0,45fr) minmax(0,25fr) minmax(0,30fr);
+    gap:8px;
+  }
+  .panel{
+    min-height:0;
+    overflow:hidden;
+    border:1px solid #ece4db;
+    border-radius:10px;
+    background:#fcfaf7;
+    padding:10px 11px;
+  }
+  .panel h3{
+    margin:0 0 6px;
+    font-size:15px;
+    line-height:1.1;
+  }
+
+  .step-panel{
+    display:flex;
+    flex-direction:column;
+  }
+  .step-stage{
+    color:var(--muted);
+    font-size:11px;
+    line-height:1.2;
+    margin-bottom:3px;
+  }
+  .step-main{
+    font-size:17px;
+    line-height:1.35;
+    font-weight:800;
+  }
+  .step-detail{
+    margin-top:5px;
+    color:var(--muted);
+    font-size:12.5px;
+    line-height:1.45;
+  }
+  .formula{
+    margin-top:auto;
+    padding:6px 8px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:#fff;
+    font:12px/1.25 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    overflow-wrap:anywhere;
+  }
+
+  .legend{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:6px 10px;
+    font-size:12px;
+    line-height:1.35;
+  }
+  .legend-row{
+    min-width:0;
+    display:flex;
+    align-items:flex-start;
+    gap:6px;
+  }
+  .legend-row:last-child{grid-column:1 / -1}
+  .box{
+    width:11px;
+    height:11px;
+    flex:0 0 auto;
+    margin-top:2px;
+    border:1px solid;
+    border-radius:3px;
+  }
+  .box.a{background:var(--accent-soft);border-color:var(--accent)}
+  .box.g{background:var(--good-bg);border-color:var(--good)}
+  .box.b{background:var(--bad-bg);border-color:var(--bad)}
+
+  .history-panel{
+    display:grid;
+    grid-template-rows:auto minmax(0,1fr);
+  }
+  .history-head{
+    min-width:0;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    margin-bottom:6px;
+  }
+  .history-head h3{margin:0}
+  .history-head button{
+    flex:0 0 auto;
+    border:1px solid var(--line);
+    border-radius:7px;
+    background:#fff;
+    padding:4px 7px;
+    font-size:11px;
+    line-height:1.2;
+  }
+  .history-table{
+    min-height:0;
+    overflow:auto;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:#fff;
+  }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:11px;
+  }
+  th,td{
+    padding:5px 6px;
+    border-bottom:1px solid #eee7df;
+    text-align:left;
+    white-space:nowrap;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  th{
+    position:sticky;
+    top:0;
+    z-index:1;
+    background:#faf8f4;
+    color:var(--muted);
+    font-family:inherit;
+    font-weight:600;
+  }
+  .ok{color:var(--good);font-weight:700}
+  .badc{color:var(--bad);font-weight:700}
+
+  .footer{
+    min-height:0;
+    overflow:hidden;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:9px;
+    padding:0 10px;
+    display:flex;
+    align-items:center;
+    color:var(--muted);
+    font-size:11px;
+    line-height:1.2;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+  }
+
+  .modal{
+    position:fixed;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background:rgba(28,26,24,.38);
+    z-index:20;
+    padding:20px;
+  }
+  .modal.open{display:flex}
+  .modal-card{
+    width:min(980px,96vw);
+    max-height:86vh;
+    overflow:auto;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:12px;
+  }
+  .modal-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:7px;
+  }
+  .modal-head h2{margin:0;font-size:17px}
+  .modal-head button{
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:8px;
+    padding:6px 9px;
+  }
+
+  @media (max-height:800px){
+    body{font-size:12px}
+
+    .app{
+      padding:7px 9px;
+      gap:6px;
+      grid-template-rows:auto auto auto minmax(0,1fr) 28px;
+    }
+
+    .title h1{font-size:20px}
+
+    .controls{
+      padding:6px 8px;
+      gap:7px;
+      border-radius:10px;
+    }
+    .field label{font-size:11px;margin-bottom:3px}
+    .field input,.field select,.btn{height:34px}
+    .field input,.field select{padding:0 8px}
+    .btn{padding:0 10px}
+
+    .statusbar{gap:6px}
+    .stat{padding:5px 8px;border-radius:9px}
+    .stat .k{font-size:10px}
+    .stat .v{font-size:13px}
+
+    .workspace{gap:7px}
+    .machine-card{grid-template-rows:29px minmax(0,1fr)}
+    .card-head{padding:0 9px}
+    .card-head h2{font-size:14px}
+    .small{font-size:11px}
+    .machine-wrap{padding:6px 7px 7px}
+    .machine{
+      padding:6px 8px;
+      grid-template-columns:minmax(135px,1fr) minmax(220px,1.18fr) minmax(135px,1fr);
+      grid-template-rows:auto 14px auto 14px auto;
+      align-content:space-between;
+      column-gap:7px;
+      row-gap:4px;
+    }
+    .node{padding:6px 8px;border-radius:9px}
+    .node h3{font-size:13px;margin-bottom:2px}
+    .node p{font-size:11px;line-height:1.25}
+    .y-node{width:min(60%,520px)}
+    .rq-node{width:min(80%,720px)}
+    .alu-shape{height:40px;width:min(130px,68%);margin:3px auto;font-size:18px}
+    .alu-op{font-size:11px}
+    .reg{grid-template-columns:26px minmax(0,1fr);gap:5px;margin-top:4px}
+    .reg-label{font-size:12px}
+    .bits{gap:2px}
+    .bit{height:22px;border-radius:5px;font-size:11px}
+    .shift-banner{margin-top:4px;padding:3px 6px;font-size:10px}
+    .flow-label{font-size:9px}
+
+    .side{padding:6px;gap:6px}
+    .panel{padding:7px 8px;border-radius:8px}
+    .panel h3{font-size:13px;margin-bottom:4px}
+    .step-stage{font-size:10px}
+    .step-main{font-size:14px;line-height:1.28}
+    .step-detail{font-size:12px;line-height:1.3;margin-top:3px}
+    .formula{padding:4px 6px;font-size:11px;margin-top:5px}
+    .legend{gap:4px 7px;font-size:11px;line-height:1.25}
+    .history-head{margin-bottom:4px}
+    .history-head button{font-size:10px;padding:3px 6px}
+    table{font-size:10px}
+    th,td{padding:4px 5px}
+
+    .footer{padding:0 8px;font-size:10px}
+  }
+
+  @media (max-width:1200px){
+    .controls{
+      grid-template-columns:minmax(160px,1fr) minmax(160px,1fr) 115px auto;
+    }
+    .btn{padding:0 9px}
+    .workspace{grid-template-columns:minmax(0,72fr) minmax(290px,28fr)}
+    .machine{
+      grid-template-columns:minmax(125px,1fr) minmax(210px,1.18fr) minmax(125px,1fr);
+    }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="title">
+      <h1>恢复余数法除法运算器</h1>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="field">
+      <label for="dividend">被除数 X（十进制）</label>
+      <input id="dividend" type="number" min="0" step="1" value="13" />
+    </div>
+    <div class="field">
+      <label for="divisor">除数 Y（十进制）</label>
+      <input id="divisor" type="number" min="1" step="1" value="3" />
+    </div>
+    <div class="field">
+      <label for="width">位宽 n</label>
+      <select id="width">
+        <option value="auto" selected>自动</option>
+        <option value="4">4 位</option>
+        <option value="8">8 位</option>
+        <option value="16">16 位</option>
+        <option value="32">32 位</option>
+      </select>
+    </div>
+    <div class="action-row">
+      <button class="btn primary" id="startBtn">开始 / 重算</button>
+      <button class="btn" id="stepBtn">下一步</button>
+      <button class="btn" id="autoBtn">自动播放</button>
+    </div>
+  </div>
+
+  <div class="statusbar">
+    <div class="stat"><div class="k">轮次</div><div class="v" id="roundText">0 / 4</div></div>
+    <div class="stat"><div class="k">阶段</div><div class="v" id="phaseText">初始化</div></div>
+    <div class="stat"><div class="k">X（二进制）</div><div class="v" id="xBinary">1101</div></div>
+    <div class="stat"><div class="k">Y（二进制）</div><div class="v" id="yBinary">0011</div></div>
+    <div class="stat"><div class="k">最终商 Q</div><div class="v" id="quotientText">—</div></div>
+    <div class="stat"><div class="k">最终余数 R</div><div class="v" id="remainderText">—</div></div>
+  </div>
+
+  <div class="workspace">
+    <section class="card machine-card">
+      <div class="card-head">
+        <h2>硬件数据通路</h2>
+        <div class="small" id="binarySummary">X = 1101₂，Y = 0011₂</div>
+      </div>
+
+      <div class="machine-wrap">
+        <div class="machine">
+          <div class="node y-node" id="yNode">
+            <h3>除数寄存器 Y</h3>
+            <p>保存除数，运算过程中不变。</p>
+            <div class="reg"><div class="reg-label">Y</div><div class="bits" id="yBits"></div></div>
+          </div>
+
+          <div class="flow-link arrow-y">
+            <div class="flow-label">Y → ALU</div>
+          </div>
+
+          <div class="node info-node" id="infoNode">
+            <h3>本轮动作</h3>
+            <p id="machineNote">点击“开始 / 重算”。</p>
+          </div>
+
+          <div class="node alu-node" id="aluNode">
+            <h3>n 位 ALU</h3>
+            <div class="alu-shape">ALU</div>
+            <div class="alu-op" id="aluText">等待操作</div>
+          </div>
+
+          <div class="node ctrl-node" id="ctrlNode">
+            <h3>控制逻辑 / 计数器</h3>
+            <p>控制左移、ALU 运算、Q₀ 写入和轮次。</p>
+          </div>
+
+          <div class="flow-link arrow-r">
+            <div class="flow-label">R ↔ ALU</div>
+          </div>
+
+          <div class="node rq-node" id="rqNode">
+            <h3>R | Q 组合寄存器</h3>
+            <p>R 保存余数；Q 初始装被除数，最后得到商。</p>
+            <div class="shift-banner" id="shiftBanner">R | Q 作为一个整体向左移动 1 位</div>
+            <div class="reg"><div class="reg-label">R</div><div class="bits" id="rBits"></div></div>
+            <div class="reg"><div class="reg-label">Q</div><div class="bits" id="qBits"></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="card side">
+      <section class="panel step-panel">
+        <h3>当前步骤</h3>
+        <div class="step-stage" id="explainStage">初始化</div>
+        <div class="step-main" id="explainMain">Q ← 13，Y ← 3，R ← 0。</div>
+        <div class="step-detail" id="explainDetail">接下来做 4 轮，每一轮都会产生 1 位商。</div>
+        <div class="formula" id="formulaText">R = 0，Q = X，Y = 除数</div>
+      </section>
+
+      <section class="panel">
+        <h3>颜色说明</h3>
+        <div class="legend">
+          <div class="legend-row"><span class="box a"></span><span>棕色：流动 / 写入</span></div>
+          <div class="legend-row"><span class="box g"></span><span>绿色：试减成功，写 1</span></div>
+          <div class="legend-row"><span class="box b"></span><span>红色：试减失败，恢复 R，写 0</span></div>
+        </div>
+      </section>
+
+      <section class="panel history-panel">
+        <div class="history-head">
+          <h3>运算过程</h3>
+          <button id="showAllBtn">查看完整过程</button>
+        </div>
+        <div class="history-table">
+          <table>
+            <thead>
+              <tr><th>轮</th><th>R−Y</th><th>位</th><th>R</th><th>Q</th></tr>
+            </thead>
+            <tbody id="miniHistory"></tbody>
+          </table>
+        </div>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h2>完整除法过程</h2>
+      <button id="closeModal">关闭</button>
+    </div>
+    <table>
+      <thead>
+        <tr><th>轮次</th><th>左移 R</th><th>左移 Q</th><th>R−Y</th><th>商位</th><th>结束 R</th><th>结束 Q</th></tr>
+      </thead>
+      <tbody id="fullHistory"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const state = {
+    X:13n, Y:3n, n:4, R:0n, Q:13n,
+    round:0, micro:0, trial:null,
+    initialized:false, done:false, running:false, timer:null,
+    pending:null, rows:[]
+  };
+
+  function bitLength(v){ return v <= 0n ? 1 : v.toString(2).length; }
+  function chooseWidth(x, y){
+    const b = Math.max(4, bitLength(x), bitLength(y));
+    return b <= 4 ? 4 : b <= 8 ? 8 : b <= 16 ? 16 : 32;
+  }
+  function mask(){ return (1n << BigInt(state.n)) - 1n; }
+  function bin(v, n = state.n){
+    const m = (1n << BigInt(n)) - 1n;
+    return (v & m).toString(2).padStart(n, "0");
+  }
+
+  function parseInputs(){
+    let x, y;
+    try{
+      x = BigInt($("dividend").value.trim());
+      y = BigInt($("divisor").value.trim());
+    }catch{
+      alert("请输入整数。");
+      return null;
+    }
+    if(x < 0n){ alert("被除数必须 ≥ 0。"); return null; }
+    if(y <= 0n){ alert("除数必须 > 0。"); return null; }
+    const n = $("width").value === "auto" ? chooseWidth(x, y) : Number($("width").value);
+    const max = (1n << BigInt(n)) - 1n;
+    if(x > max || y > max){
+      alert(`当前 ${n} 位最大表示 ${max.toString()}，请增大位宽或选自动。`);
+      return null;
+    }
+    return {x, y, n};
+  }
+
+  function renderBits(id, value, options = {}){
+    const host = $(id);
+    host.innerHTML = "";
+    [...bin(value)].forEach((ch, i) => {
+      const el = document.createElement("span");
+      el.className = "bit";
+      if(options.hot?.includes(i)) el.classList.add("hot");
+      if(options.good?.includes(i)) el.classList.add("good");
+      if(options.bad?.includes(i)) el.classList.add("bad");
+      el.textContent = ch;
+      host.appendChild(el);
+    });
+  }
+
+  function clearMarks(){
+    ["yNode","aluNode","rqNode","ctrlNode","infoNode"].forEach(id => {
+      $(id).classList.remove("active","good","bad");
+    });
+    $("shiftBanner").classList.remove("active");
+  }
+  function mark(id, type = "active"){ $(id).classList.add(type); }
+
+  function updateStatus(){
+    $("roundText").textContent = `${state.round} / ${state.n}`;
+    $("phaseText").textContent = $("explainStage").textContent;
+    $("xBinary").textContent = bin(state.X);
+    $("yBinary").textContent = bin(state.Y);
+    $("binarySummary").textContent = `X = ${bin(state.X)}₂，Y = ${bin(state.Y)}₂`;
+    $("quotientText").textContent = state.done ? `${state.Q.toString()} (${bin(state.Q)}₂)` : "—";
+    $("remainderText").textContent = state.done ? `${state.R.toString()} (${bin(state.R)}₂)` : "—";
+  }
+
+  function renderRegs(opts = {}){
+    renderBits("yBits", state.Y, opts.y || {});
+    renderBits("rBits", state.R, opts.r || {});
+    renderBits("qBits", state.Q, opts.q || {});
+    updateStatus();
+  }
+
+  function explain(stage, main, detail, formula){
+    $("explainStage").textContent = stage;
+    $("explainMain").textContent = main;
+    $("explainDetail").textContent = detail;
+    $("formulaText").textContent = formula;
+    updateStatus();
+  }
+
+  function renderHistory(){
+    const mini = $("miniHistory");
+    const full = $("fullHistory");
+    mini.innerHTML = "";
+    full.innerHTML = "";
+
+    const recent = state.rows.slice(-8);
+    recent.forEach(r => {
+      const tr = document.createElement("tr");
+      const ok = r.bit === 1;
+      tr.innerHTML = `
+        <td>${r.round}</td>
+        <td class="${ok ? "ok" : "badc"}">${r.trial.toString()}</td>
+        <td class="${ok ? "ok" : "badc"}">${r.bit}</td>
+        <td>${bin(r.finalR)}</td>
+        <td>${bin(r.finalQ)}</td>
+      `;
+      mini.appendChild(tr);
+    });
+
+    state.rows.forEach(r => {
+      const tr = document.createElement("tr");
+      const ok = r.bit === 1;
+      tr.innerHTML = `
+        <td>${r.round}</td>
+        <td>${bin(r.shiftR)}</td>
+        <td>${bin(r.shiftQ)}</td>
+        <td class="${ok ? "ok" : "badc"}">${r.trial.toString()}</td>
+        <td class="${ok ? "ok" : "badc"}">${r.bit}</td>
+        <td>${bin(r.finalR)}</td>
+        <td>${bin(r.finalQ)}</td>
+      `;
+      full.appendChild(tr);
+    });
+  }
+
+  function init(){
+    stopAuto();
+    const v = parseInputs();
+    if(!v) return;
+
+    Object.assign(state, {
+      X:v.x, Y:v.y, n:v.n, R:0n, Q:v.x,
+      round:0, micro:0, trial:null,
+      initialized:true, done:false, pending:null, rows:[]
+    });
+
+    $("aluText").textContent = "等待操作";
+    $("machineNote").textContent = "初始化完成：R = 0，Q = 被除数，Y = 除数。";
+    clearMarks();
+    mark("yNode");
+    mark("rqNode");
+
+    explain(
+      "初始化",
+      `Q ← ${state.X.toString()}，Y ← ${state.Y.toString()}，R ← 0。`,
+      `接下来做 ${state.n} 轮，每一轮都会产生 1 位商。`,
+      `R = 0，Q = ${state.X.toString()}，Y = ${state.Y.toString()}`
+    );
+
+    renderRegs();
+    renderHistory();
+    $("stepBtn").disabled = false;
+    $("autoBtn").disabled = false;
+  }
+
+  function shiftStep(){
+    clearMarks();
+    mark("rqNode");
+    mark("ctrlNode");
+    $("shiftBanner").classList.add("active");
+
+    const m = mask();
+    const carry = (state.Q >> BigInt(state.n - 1)) & 1n;
+    state.R = ((state.R << 1n) | carry) & m;
+    state.Q = (state.Q << 1n) & m;
+
+    state.pending = {
+      round: state.round + 1,
+      shiftR: state.R,
+      shiftQ: state.Q,
+      trial: null,
+      bit: null,
+      finalR: null,
+      finalQ: null
+    };
+
+    $("aluText").textContent = "下一步：R − Y";
+    $("machineNote").textContent = `Q 的最高位 ${carry.toString()} 被移入 R 的最低位。`;
+
+    explain(
+      `第 ${state.round + 1} 轮 · 左移`,
+      "R | Q 作为一个整体左移 1 位。",
+      `这相当于竖式除法里“把下一位拉下来”。这次移入 R 的位是 ${carry.toString()}。`,
+      `R ← (R << 1) + ${carry.toString()}，Q ← Q << 1`
+    );
+
+    renderRegs({r:{hot:[state.n - 1]}, q:{hot:[state.n - 1]}});
+  }
+
+  function subtractStep(){
+    clearMarks();
+    mark("yNode");
+    mark("aluNode");
+    mark("rqNode");
+
+    state.trial = state.R - state.Y;
+    state.pending.trial = state.trial;
+    const ok = state.trial >= 0n;
+
+    $("aluText").textContent = `${state.R.toString()} − ${state.Y.toString()} = ${state.trial.toString()}`;
+    $("machineNote").textContent = ok ? "试减结果非负：说明这一位够减。" : "试减结果为负：说明这一位不够减。";
+    mark("aluNode", ok ? "good" : "bad");
+
+    explain(
+      `第 ${state.round + 1} 轮 · 试减`,
+      `ALU 计算 R − Y = ${state.trial.toString()}。`,
+      ok ? "结果 ≥ 0，本轮商位将写成 1。" : "结果 < 0，本轮商位将写成 0，并恢复余数。",
+      `trial = R − Y = ${state.trial.toString()}`
+    );
+
+    renderRegs({r:{[ok ? "good" : "bad"]:[state.n - 1]}});
+  }
+
+  function resolveStep(){
+    clearMarks();
+    mark("ctrlNode");
+    mark("rqNode");
+
+    const ok = state.trial >= 0n;
+
+    if(ok){
+      state.R = state.trial;
+      state.Q = state.Q | 1n;
+      state.pending.bit = 1;
+      mark("rqNode", "good");
+      $("machineNote").textContent = "试减成功：保留新的 R，并把 Q₀ 写成 1。";
+      explain(
+        `第 ${state.round + 1} 轮 · 写商位`,
+        "试减成功，本轮商位写 1。",
+        "新的余数就是 R − Y 的结果，同时把 Q 的最低位写成 1。",
+        `R ← R − Y，Q₀ ← 1`
+      );
+      renderRegs({q:{good:[state.n - 1]}});
+    }else{
+      state.Q = state.Q & (~1n);
+      state.pending.bit = 0;
+      mark("rqNode", "bad");
+      $("machineNote").textContent = "试减失败：恢复余数，并把 Q₀ 写成 0。";
+      explain(
+        `第 ${state.round + 1} 轮 · 恢复余数`,
+        "试减失败，本轮商位写 0。",
+        "由于 R − Y 为负，所以不采用这个负值，R 恢复为试减前的值，Q 的最低位写 0。",
+        `R ← 原 R，Q₀ ← 0`
+      );
+      renderRegs({q:{bad:[state.n - 1]}});
+    }
+
+    state.pending.finalR = state.R;
+    state.pending.finalQ = state.Q;
+    state.rows.push(state.pending);
+    state.pending = null;
+
+    state.round++;
+    state.micro = 0;
+    renderHistory();
+
+    if(state.round >= state.n){
+      state.done = true;
+      stopAuto();
+      $("stepBtn").disabled = true;
+      $("autoBtn").disabled = true;
+      clearMarks();
+      mark("rqNode", "good");
+      $("aluText").textContent = "运算完成";
+      $("machineNote").textContent = `最终结果：Q = ${state.Q.toString()}，R = ${state.R.toString()}。`;
+      explain(
+        "运算完成",
+        `${state.X.toString()} ÷ ${state.Y.toString()} = ${state.Q.toString()} …… ${state.R.toString()}`,
+        `验证：${state.Y.toString()} × ${state.Q.toString()} + ${state.R.toString()} = ${state.X.toString()}。`,
+        `X = Y × Q + R`
+      );
+      renderRegs({r:{good:[state.n - 1]}, q:{good:[state.n - 1]}});
+    }else{
+      updateStatus();
+    }
+  }
+
+  function nextStep(){
+    if(!state.initialized){
+      init();
+      return;
+    }
+    if(state.done) return;
+
+    if(state.micro === 0){
+      shiftStep();
+      state.micro = 1;
+    }else if(state.micro === 1){
+      subtractStep();
+      state.micro = 2;
+    }else{
+      resolveStep();
+    }
+  }
+
+  function startAuto(){
+    if(!state.initialized) init();
+    if(state.done || state.running) return;
+    state.running = true;
+    $("autoBtn").textContent = "暂停";
+    state.timer = setInterval(() => {
+      if(state.done){
+        stopAuto();
+        return;
+      }
+      nextStep();
+    }, 900);
+  }
+
+  function stopAuto(){
+    state.running = false;
+    $("autoBtn").textContent = "自动播放";
+    if(state.timer){
+      clearInterval(state.timer);
+      state.timer = null;
+    }
+  }
+
+  $("startBtn").addEventListener("click", init);
+  $("stepBtn").addEventListener("click", nextStep);
+  $("autoBtn").addEventListener("click", () => state.running ? stopAuto() : startAuto());
+  $("showAllBtn").addEventListener("click", () => $("modal").classList.add("open"));
+  $("closeModal").addEventListener("click", () => $("modal").classList.remove("open"));
+  $("modal").addEventListener("click", e => {
+    if(e.target === $("modal")) $("modal").classList.remove("open");
+  });
+  ["dividend","divisor"].forEach(id => {
+    $(id).addEventListener("keydown", e => {
+      if(e.key === "Enter") init();
+    });
+  });
+
+  init();
+})();
+</script>
+</body>
+</html>
