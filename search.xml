@@ -14,20 +14,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Divide Dataset Based on Feature Threshold</title>
-    <url>/2026/07/31/deep-ml/Divide%20Dataset%20Based%20on%20Feature%20Threshold/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>人工智能</category>
-      </categories>
-      <tags>
-        <tag>机器学习</tag>
-        <tag>NumPy</tag>
-        <tag>布尔索引</tag>
-        <tag>PyTorch</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Measure Disorder in Apple Colors</title>
     <url>/2026/07/31/deep-ml/Measure%20Disorder%20in%20Apple%20Colors/</url>
     <content><![CDATA[]]></content>
@@ -39,6 +25,33 @@
         <tag>NumPy</tag>
         <tag>PyTorch</tag>
         <tag>基尼不纯度</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>luogu上AC自动机的三个模板</title>
+    <url>/2026/06/24/codeforces/AC%E8%87%AA%E5%8A%A8%E6%9C%BA%E6%A8%A1%E6%9D%BF/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>AC自动机</tag>
+        <tag>字典树</tag>
+        <tag>KMP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Divide Dataset Based on Feature Threshold</title>
+    <url>/2026/07/31/deep-ml/Divide%20Dataset%20Based%20on%20Feature%20Threshold/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>人工智能</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+        <tag>NumPy</tag>
+        <tag>布尔索引</tag>
+        <tag>PyTorch</tag>
       </tags>
   </entry>
   <entry>
@@ -104,31 +117,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Codeforces Round 1045 (Div.2) D</title>
-    <url>/2026/07/29/codeforces/Codeforces%20Round%201045%20(Div.%202)/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>构造</tag>
-        <tag>树的直径</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>luogu上AC自动机的三个模板</title>
-    <url>/2026/06/24/codeforces/AC%E8%87%AA%E5%8A%A8%E6%9C%BA%E6%A8%A1%E6%9D%BF/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>AC自动机</tag>
-        <tag>字典树</tag>
-        <tag>KMP</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Codeforces Round 1064 (Div.2) C,D,E,F</title>
     <url>/2026/07/31/codeforces/Codeforces%20Round%201064%20(Div.%202)/</url>
     <content><![CDATA[]]></content>
@@ -152,8 +140,8 @@
         <category>算法</category>
       </categories>
       <tags>
-        <tag>DP</tag>
         <tag>KMP</tag>
+        <tag>DP</tag>
         <tag>容斥</tag>
       </tags>
   </entry>
@@ -170,6 +158,44 @@
       </tags>
   </entry>
   <entry>
+    <title>Codeforces Round 1045 (Div.2) D</title>
+    <url>/2026/07/29/codeforces/Codeforces%20Round%201045%20(Div.%202)/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>构造</tag>
+        <tag>树的直径</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Codeforces Round 130 (Div.2) E</title>
+    <url>/2026/08/25/codeforces/Codeforces%20Round%20130%20(Div.%202)%20E/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>动态开点线段树</tag>
+        <tag>线段树合并</tag>
+        <tag>树上倍增</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Codeforces Round 112 (Div.2) E题解</title>
+    <url>/2026/07/16/codeforces/Codeforces%20Round%20112%20(Div.%202)%20E/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>字典树</tag>
+        <tag>DP</tag>
+        <tag>SOS DP</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Codeforces Round 185 (Div.1) B题解</title>
     <url>/2026/06/01/codeforces/Codeforces%20Round%20185%20(Div.%201)%20B/</url>
     <content><![CDATA[]]></content>
@@ -180,6 +206,19 @@
         <tag>数据结构</tag>
         <tag>DP</tag>
         <tag>斜率优化</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Codeforces Round 254 (Div.1) C 线段树+珂朵莉树</title>
+    <url>/2026/06/27/codeforces/Codeforces%20Round%20254%20(Div.%201)%20C/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>线段树</tag>
+        <tag>数据结构</tag>
+        <tag>珂朵莉树</tag>
       </tags>
   </entry>
   <entry>
@@ -194,19 +233,6 @@
         <tag>数据结构</tag>
         <tag>费马小定理</tag>
         <tag>数论</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Codeforces Round 112 (Div.2) E题解</title>
-    <url>/2026/07/16/codeforces/Codeforces%20Round%20112%20(Div.%202)%20E/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>DP</tag>
-        <tag>字典树</tag>
-        <tag>SOS DP</tag>
       </tags>
   </entry>
   <entry>
@@ -229,34 +255,20 @@
         <category>算法</category>
       </categories>
       <tags>
-        <tag>差分</tag>
         <tag>KMP</tag>
+        <tag>差分</tag>
       </tags>
   </entry>
   <entry>
-    <title>Codeforces Round 254 (Div.1) C 线段树+珂朵莉树</title>
-    <url>/2026/06/27/codeforces/Codeforces%20Round%20254%20(Div.%201)%20C/</url>
+    <title>Codeforces Round 449 (Div. 1) C (ODT模板)</title>
+    <url>/2026/06/05/codeforces/Codeforces%20Round%20449%20(Div.%201)%20C/</url>
     <content><![CDATA[]]></content>
       <categories>
         <category>算法</category>
       </categories>
       <tags>
-        <tag>线段树</tag>
         <tag>数据结构</tag>
         <tag>珂朵莉树</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Codeforces Round 130 (Div.2) E</title>
-    <url>/2026/08/25/codeforces/Codeforces%20Round%20130%20(Div.%202)%20E/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>动态开点线段树</tag>
-        <tag>线段树合并</tag>
-        <tag>树上倍增</tag>
       </tags>
   </entry>
   <entry>
@@ -289,18 +301,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Codeforces Round 449 (Div. 1) C (ODT模板)</title>
-    <url>/2026/06/05/codeforces/Codeforces%20Round%20449%20(Div.%201)%20C/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>数据结构</tag>
-        <tag>珂朵莉树</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Codeforces Round 493 (Div. 1) E代码（无解释）</title>
     <url>/2026/06/20/codeforces/Codeforces%20Round%20493%20(Div.%201)%20E/</url>
     <content><![CDATA[]]></content>
@@ -313,17 +313,17 @@
       </tags>
   </entry>
   <entry>
-    <title>Codeforces Round 636 (Div.3)</title>
-    <url>/2026/08/01/codeforces/Codeforces%20Round%20636%20(Div.%203)/</url>
+    <title>Codeforces Round 526 (Div.1) E 李超线段树经典题</title>
+    <url>/2026/07/07/codeforces/Codeforces%20Round%20526%20(Div.%201)%20E/</url>
     <content><![CDATA[]]></content>
       <categories>
         <category>算法</category>
       </categories>
       <tags>
-        <tag>前缀和</tag>
-        <tag>构造</tag>
-        <tag>贪心</tag>
-        <tag>最短路</tag>
+        <tag>数据结构</tag>
+        <tag>DP</tag>
+        <tag>李超线段树</tag>
+        <tag>离散化</tag>
       </tags>
   </entry>
   <entry>
@@ -353,8 +353,8 @@
       </tags>
   </entry>
   <entry>
-    <title>Codeforces Round 526 (Div.1) E 李超线段树经典题</title>
-    <url>/2026/07/07/codeforces/Codeforces%20Round%20526%20(Div.%201)%20E/</url>
+    <title>Codeforces Round 894 (Div.3) E,F,G 题解</title>
+    <url>/2026/03/22/codeforces/Codeforces%20Round%20894%20Div.3%20E,F,G/</url>
     <content><![CDATA[]]></content>
       <categories>
         <category>算法</category>
@@ -362,8 +362,7 @@
       <tags>
         <tag>数据结构</tag>
         <tag>DP</tag>
-        <tag>李超线段树</tag>
-        <tag>离散化</tag>
+        <tag>bitset</tag>
       </tags>
   </entry>
   <entry>
@@ -375,6 +374,31 @@
       </categories>
       <tags>
         <tag>并查集</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Codeforces Round 636 (Div.3)</title>
+    <url>/2026/08/01/codeforces/Codeforces%20Round%20636%20(Div.%203)/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>前缀和</tag>
+        <tag>贪心</tag>
+        <tag>构造</tag>
+        <tag>最短路</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Codeforces Round 947 (Div.1 + Div.2) E</title>
+    <url>/2026/09/03/codeforces/Codeforces%20Round%20947%20(Div.%201%20+%20Div.%202)/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>数据结构</tag>
       </tags>
   </entry>
   <entry>
@@ -391,32 +415,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Codeforces Round 954 (Div.3) F,G2</title>
-    <url>/2026/09/01/codeforces/Codeforces%20Round%20954%20(Div.%203)/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>数论</tag>
-        <tag>Tarjan</tag>
-        <tag>割边</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Codeforces Round 894 (Div.3) E,F,G 题解</title>
-    <url>/2026/03/22/codeforces/Codeforces%20Round%20894%20Div.3%20E,F,G/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>数据结构</tag>
-        <tag>DP</tag>
-        <tag>bitset</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Codeforces Round 951 (Div.2) D,E</title>
     <url>/2026/07/25/codeforces/Codeforces%20Round%20951%20(Div.%202)%20D,E/</url>
     <content><![CDATA[]]></content>
@@ -429,82 +427,16 @@
       </tags>
   </entry>
   <entry>
-    <title>Codeforces Round 947 (Div.1 + Div.2) E</title>
-    <url>/2026/09/03/codeforces/Codeforces%20Round%20947%20(Div.%201%20+%20Div.%202)/</url>
+    <title>Codeforces Round 954 (Div.3) F,G2</title>
+    <url>/2026/09/01/codeforces/Codeforces%20Round%20954%20(Div.%203)/</url>
     <content><![CDATA[]]></content>
       <categories>
         <category>算法</category>
       </categories>
       <tags>
-        <tag>数据结构</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Codeforces Round 958 (Div.2) D,E</title>
-    <url>/2026/07/28/codeforces/Codeforces%20Round%20958%20(Div.%202)/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>DP</tag>
-        <tag>差分</tag>
-        <tag>树形DP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Codeforces Round 968 (Div.2) D1,D2,E1,F</title>
-    <url>/2026/07/26/codeforces/Codeforces%20Round%20968%20(Div.%202)/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>DP</tag>
-        <tag>贪心</tag>
-        <tag>图论</tag>
-        <tag>树状数组</tag>
-        <tag>随机化</tag>
-        <tag>MEX</tag>
-        <tag>状压DP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Codeforces Round 972 (Div.2) C,D,E1</title>
-    <url>/2026/08/03/codeforces/Codeforces%20Round%20972%20(Div.%202)/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>DP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Deltix Round, Spring 2021 G 3200分的树套树</title>
-    <url>/2026/07/21/codeforces/Deltix%20Round,%20Spring%202021%20G/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>动态开点线段树</tag>
-        <tag>树状数组</tag>
-        <tag>树套树</tag>
-        <tag>分治</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Educational Codeforces Round 13 F 时间线段树+李超线段树</title>
-    <url>/2026/07/05/codeforces/Educational%20Codeforces%20Round%2013%20F/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>数据结构</tag>
-        <tag>李超线段树</tag>
-        <tag>时间线段树</tag>
+        <tag>数论</tag>
+        <tag>Tarjan</tag>
+        <tag>割边</tag>
       </tags>
   </entry>
   <entry>
@@ -525,6 +457,44 @@
       </tags>
   </entry>
   <entry>
+    <title>Codeforces Round 972 (Div.2) C,D,E1</title>
+    <url>/2026/08/03/codeforces/Codeforces%20Round%20972%20(Div.%202)/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>DP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Codeforces Round 958 (Div.2) D,E</title>
+    <url>/2026/07/28/codeforces/Codeforces%20Round%20958%20(Div.%202)/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>DP</tag>
+        <tag>差分</tag>
+        <tag>树形DP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Deltix Round, Spring 2021 G 3200分的树套树</title>
+    <url>/2026/07/21/codeforces/Deltix%20Round,%20Spring%202021%20G/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>动态开点线段树</tag>
+        <tag>树状数组</tag>
+        <tag>树套树</tag>
+        <tag>分治</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Deltix Round, Spring 2021 D 随机化+子集DP</title>
     <url>/2026/07/17/codeforces/Deltix%20Round,%20Spring%202021%20D/</url>
     <content><![CDATA[]]></content>
@@ -538,6 +508,23 @@
       </tags>
   </entry>
   <entry>
+    <title>Codeforces Round 968 (Div.2) D1,D2,E1,F</title>
+    <url>/2026/07/26/codeforces/Codeforces%20Round%20968%20(Div.%202)/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>DP</tag>
+        <tag>贪心</tag>
+        <tag>图论</tag>
+        <tag>树状数组</tag>
+        <tag>随机化</tag>
+        <tag>MEX</tag>
+        <tag>状压DP</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Educational Codeforces Round 20 G 经典拼接数组，修改+区间最小</title>
     <url>/2026/07/05/codeforces/Educational%20Codeforces%20Round%2020%20G/</url>
     <content><![CDATA[]]></content>
@@ -547,6 +534,18 @@
       <tags>
         <tag>数据结构</tag>
         <tag>动态开点线段树</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Yandex.Algorithm 2011 Round 2 C题解 AC自动机优化DP</title>
+    <url>/2026/06/24/codeforces/Yandex.Algorithm%202011Round%202/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>AC自动机</tag>
+        <tag>DP</tag>
       </tags>
   </entry>
   <entry>
@@ -564,27 +563,16 @@
       </tags>
   </entry>
   <entry>
-    <title>Squarepoint Challenge (Codeforces Round 1055, Div.1 + Div.2) G</title>
-    <url>/2026/09/03/codeforces/Squarepoint%20Challenge%20(Codeforces%20Round%201055,%20Div.%201%20+%20Div.%202)/</url>
+    <title>Educational Codeforces Round 13 F 时间线段树+李超线段树</title>
+    <url>/2026/07/05/codeforces/Educational%20Codeforces%20Round%2013%20F/</url>
     <content><![CDATA[]]></content>
       <categories>
         <category>算法</category>
       </categories>
       <tags>
-        <tag>线段树</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Codeforces 2137G Cry Me a River 题解</title>
-    <url>/2026/03/13/codeforces/cf2137g-cry-me-a-river%E9%A2%98%E8%A7%A3/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>DP</tag>
-        <tag>图论</tag>
-        <tag>博弈论</tag>
+        <tag>数据结构</tag>
+        <tag>李超线段树</tag>
+        <tag>时间线段树</tag>
       </tags>
   </entry>
   <entry>
@@ -595,11 +583,22 @@
         <category>算法</category>
       </categories>
       <tags>
-        <tag>DP</tag>
         <tag>字典树</tag>
+        <tag>DP</tag>
         <tag>树形DP</tag>
         <tag>笛卡尔树</tag>
         <tag>树上启发式合并</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Squarepoint Challenge (Codeforces Round 1055, Div.1 + Div.2) G</title>
+    <url>/2026/09/03/codeforces/Squarepoint%20Challenge%20(Codeforces%20Round%201055,%20Div.%201%20+%20Div.%202)/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>线段树</tag>
       </tags>
   </entry>
   <entry>
@@ -612,216 +611,8 @@
       <tags>
         <tag>前缀和</tag>
         <tag>构造</tag>
-        <tag>树状数组</tag>
         <tag>离散化</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Yandex.Algorithm 2011 Round 2 C题解 AC自动机优化DP</title>
-    <url>/2026/06/24/codeforces/Yandex.Algorithm%202011Round%202/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>DP</tag>
-        <tag>AC自动机</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Leetcode 1563. 石子游戏 V</title>
-    <url>/2026/08/17/leetcode%E5%91%A8%E8%B5%9B/1563.%20%E7%9F%B3%E5%AD%90%E6%B8%B8%E6%88%8F%20V/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>区间DP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>LeetCode 179场双周赛</title>
-    <url>/2026/03/28/leetcode%E5%91%A8%E8%B5%9B/179%E5%9C%BA(%E5%8F%8C)/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>DP</tag>
-        <tag>前缀和</tag>
-        <tag>贪心</tag>
-        <tag>快速幂</tag>
-        <tag>bitset</tag>
-        <tag>模拟</tag>
-        <tag>组合数学</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Leetcode 2213. 由单个字符重复的最长子字符串</title>
-    <url>/2026/08/12/leetcode%E5%91%A8%E8%B5%9B/2213.%20%E7%94%B1%E5%8D%95%E4%B8%AA%E5%AD%97%E7%AC%A6%E9%87%8D%E5%A4%8D%E7%9A%84%E6%9C%80%E9%95%BF%E5%AD%90%E5%AD%97%E7%AC%A6%E4%B8%B2/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>线段树</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>第六届上海理工大学程序设计全国挑战赛 C,E,F题解</title>
-    <url>/2026/07/19/codeforces/%E7%AC%AC%E5%85%AD%E5%B1%8A%E4%B8%8A%E6%B5%B7%E7%90%86%E5%B7%A5%E5%A4%A7%E5%AD%A6%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E5%85%A8%E5%9B%BD%E6%8C%91%E6%88%98%E8%B5%9B/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>DP</tag>
-        <tag>字典树</tag>
-        <tag>博弈论</tag>
-        <tag>笛卡尔树</tag>
-        <tag>树上启发式合并</tag>
-        <tag>概率DP</tag>
-        <tag>期望</tag>
-        <tag>Min-Plus矩阵</tag>
-        <tag>倍增</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Leetcode 4023.电梯请求 II</title>
-    <url>/2026/08/18/leetcode%E5%91%A8%E8%B5%9B/4023.%20%E7%94%B5%E6%A2%AF%E8%AF%B7%E6%B1%82%20II/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>DP</tag>
-        <tag>区间DP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Leetcode 4003. 交替方向的最小路径代价 III</title>
-    <url>/2026/08/12/leetcode%E5%91%A8%E8%B5%9B/4003.%20%E4%BA%A4%E6%9B%BF%E6%96%B9%E5%90%91%E7%9A%84%E6%9C%80%E5%B0%8F%E8%B7%AF%E5%BE%84%E4%BB%A3%E4%BB%B7%20III/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>最短路</tag>
-        <tag>Dijkstra</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Leetcode 4037.最多有效分割位置 II</title>
-    <url>/2026/08/31/leetcode%E5%91%A8%E8%B5%9B/4037.%20%E6%9C%80%E5%A4%9A%E6%9C%89%E6%95%88%E5%88%86%E5%89%B2%E4%BD%8D%E7%BD%AE%20II/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>线段树</tag>
-        <tag>贪心</tag>
-        <tag>二分</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>牛客周赛 Round 158 F</title>
-    <url>/2026/08/24/nowcoder/%E7%89%9B%E5%AE%A2%E5%91%A8%E8%B5%9B%20Round%20158%20F/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>矩阵快速幂</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>LeetCode 494场周赛 阿里云专场</title>
-    <url>/2026/03/22/leetcode%E5%91%A8%E8%B5%9B/494%E5%9C%BA/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>DP</tag>
-        <tag>位运算</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>牛客小白月赛136 F 主席树/树上启发式合并</title>
-    <url>/2026/08/27/nowcoder/%E7%89%9B%E5%AE%A2%E5%B0%8F%E7%99%BD%E6%9C%88%E8%B5%9B136%20F/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>树上启发式合并</tag>
-        <tag>主席树</tag>
-        <tag>可持久化线段树</tag>
-        <tag>LCA</tag>
-        <tag>树链剖分</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>LeetCode 511场周赛</title>
-    <url>/2026/07/25/leetcode%E5%91%A8%E8%B5%9B/511%E5%9C%BA/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>贪心</tag>
-        <tag>最小表示法</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>LeetCode 495场周赛</title>
-    <url>/2026/03/29/leetcode%E5%91%A8%E8%B5%9B/495%E5%9C%BA/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>图论</tag>
-        <tag>并查集</tag>
-        <tag>模拟</tag>
-        <tag>带权并查集</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>牛客练习赛156 D,E</title>
-    <url>/2026/09/01/nowcoder/%E7%89%9B%E5%AE%A2%E7%BB%83%E4%B9%A0%E8%B5%9B156/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>DP</tag>
-        <tag>状压DP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>图灵完备攻略 布尔代数</title>
-    <url>/2026/07/20/%E5%9B%BE%E7%81%B5%E5%AE%8C%E5%A4%87%E6%94%BB%E7%95%A5/%E5%9B%BE%E7%81%B5%E5%AE%8C%E5%A4%87%E6%94%BB%E7%95%A5%20%E5%B8%83%E5%B0%94%E4%BB%A3%E6%95%B0/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>计算机基础</category>
-      </categories>
-      <tags>
-        <tag>图灵完备攻略</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>P10463 Interval GCD</title>
-    <url>/2026/07/05/luogu/P10463%20Interval%20GCD/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>线段树</tag>
-        <tag>数据结构</tag>
-        <tag>差分</tag>
-        <tag>最大公约数</tag>
+        <tag>树状数组</tag>
       </tags>
   </entry>
   <entry>
@@ -852,17 +643,49 @@
       </tags>
   </entry>
   <entry>
-    <title>UTOI 1C  Delirium Of Aeons</title>
-    <url>/2026/09/07/luogu/P15268%20%E3%80%8CUTOI%201C%E3%80%8DDelirium%20Of%20Aeons/</url>
+    <title>Codeforces 2137G Cry Me a River 题解</title>
+    <url>/2026/03/13/codeforces/cf2137g-cry-me-a-river%E9%A2%98%E8%A7%A3/</url>
     <content><![CDATA[]]></content>
       <categories>
         <category>算法</category>
       </categories>
       <tags>
-        <tag>贪心</tag>
-        <tag>树链剖分</tag>
-        <tag>树的直接</tag>
-        <tag>长链剖分</tag>
+        <tag>DP</tag>
+        <tag>图论</tag>
+        <tag>博弈论</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>P10463 Interval GCD</title>
+    <url>/2026/07/05/luogu/P10463%20Interval%20GCD/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>线段树</tag>
+        <tag>数据结构</tag>
+        <tag>差分</tag>
+        <tag>最大公约数</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>第六届上海理工大学程序设计全国挑战赛 C,E,F题解</title>
+    <url>/2026/07/19/codeforces/%E7%AC%AC%E5%85%AD%E5%B1%8A%E4%B8%8A%E6%B5%B7%E7%90%86%E5%B7%A5%E5%A4%A7%E5%AD%A6%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E5%85%A8%E5%9B%BD%E6%8C%91%E6%88%98%E8%B5%9B/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>字典树</tag>
+        <tag>DP</tag>
+        <tag>笛卡尔树</tag>
+        <tag>树上启发式合并</tag>
+        <tag>博弈论</tag>
+        <tag>概率DP</tag>
+        <tag>期望</tag>
+        <tag>Min-Plus矩阵</tag>
+        <tag>倍增</tag>
       </tags>
   </entry>
   <entry>
@@ -877,6 +700,20 @@
       </tags>
   </entry>
   <entry>
+    <title>UTOI 1C  Delirium Of Aeons</title>
+    <url>/2026/09/07/luogu/P15268%20%E3%80%8CUTOI%201C%E3%80%8DDelirium%20Of%20Aeons/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>贪心</tag>
+        <tag>树的直接</tag>
+        <tag>树链剖分</tag>
+        <tag>长链剖分</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>XJTUPC 2026 The Whole Rest</title>
     <url>/2026/09/06/luogu/P16445%20%5BXJTUPC%202026%5D%20The%20Whole%20Rest/</url>
     <content><![CDATA[]]></content>
@@ -885,8 +722,8 @@
       </categories>
       <tags>
         <tag>LCA</tag>
-        <tag>树链剖分</tag>
         <tag>树的直接</tag>
+        <tag>树链剖分</tag>
       </tags>
   </entry>
   <entry>
@@ -903,29 +740,15 @@
       </tags>
   </entry>
   <entry>
-    <title>SCOI2010 传送带</title>
-    <url>/2026/08/26/luogu/P2571%20%5BSCOI2010%5D%20%E4%BC%A0%E9%80%81%E5%B8%A6/</url>
+    <title>可并堆的左偏树实现</title>
+    <url>/2026/08/22/luogu/P3377%20%E3%80%90%E6%A8%A1%E6%9D%BF%E3%80%91%E5%8F%AF%E5%B9%B6%E5%A0%86%201/</url>
     <content><![CDATA[]]></content>
       <categories>
         <category>算法</category>
       </categories>
       <tags>
-        <tag>三分</tag>
-        <tag>计算几何</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>NOI2005 维护数列</title>
-    <url>/2026/08/22/luogu/P2042%20%5BNOI2005%5D%20%E7%BB%B4%E6%8A%A4%E6%95%B0%E5%88%97/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>数据结构</tag>
-        <tag>平衡树</tag>
-        <tag>splay</tag>
-        <tag>文艺平衡树</tag>
+        <tag>可并堆</tag>
+        <tag>左偏树</tag>
       </tags>
   </entry>
   <entry>
@@ -942,27 +765,17 @@
       </tags>
   </entry>
   <entry>
-    <title>可并堆的左偏树实现</title>
-    <url>/2026/08/22/luogu/P3377%20%E3%80%90%E6%A8%A1%E6%9D%BF%E3%80%91%E5%8F%AF%E5%B9%B6%E5%A0%86%201/</url>
+    <title>NOI2005 维护数列</title>
+    <url>/2026/08/22/luogu/P2042%20%5BNOI2005%5D%20%E7%BB%B4%E6%8A%A4%E6%95%B0%E5%88%97/</url>
     <content><![CDATA[]]></content>
       <categories>
         <category>算法</category>
       </categories>
       <tags>
-        <tag>可并堆</tag>
-        <tag>左偏树</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>傅里叶级数的定理证明</title>
-    <url>/2026/07/23/%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90/%E5%82%85%E9%87%8C%E5%8F%B6%E7%BA%A7%E6%95%B0%E7%9A%84%E5%AE%9A%E7%90%86%E8%AF%81%E6%98%8E/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>数学</category>
-      </categories>
-      <tags>
-        <tag>傅里叶级数</tag>
-        <tag>数学分析</tag>
+        <tag>数据结构</tag>
+        <tag>平衡树</tag>
+        <tag>splay</tag>
+        <tag>文艺平衡树</tag>
       </tags>
   </entry>
   <entry>
@@ -982,16 +795,16 @@
       </tags>
   </entry>
   <entry>
-    <title>GDOI2014 拯救莫莉斯</title>
-    <url>/2026/08/23/luogu/P3888%20%5BGDOI2014%5D%20%E6%8B%AF%E6%95%91%E8%8E%AB%E8%8E%89%E6%96%AF/</url>
+    <title>文艺平衡树</title>
+    <url>/2026/08/21/luogu/P3391%20%E6%96%87%E8%89%BA%E5%B9%B3%E8%A1%A1%E6%A0%91/</url>
     <content><![CDATA[]]></content>
       <categories>
         <category>算法</category>
       </categories>
       <tags>
-        <tag>DP</tag>
-        <tag>状态压缩</tag>
-        <tag>状压DP</tag>
+        <tag>平衡树</tag>
+        <tag>splay</tag>
+        <tag>文艺平衡树</tag>
       </tags>
   </entry>
   <entry>
@@ -1004,22 +817,34 @@
       <tags>
         <tag>数据结构</tag>
         <tag>动态开点线段树</tag>
-        <tag>主席树</tag>
-        <tag>可持久化线段树</tag>
         <tag>rope</tag>
+        <tag>可持久化线段树</tag>
+        <tag>主席树</tag>
       </tags>
   </entry>
   <entry>
-    <title>文艺平衡树</title>
-    <url>/2026/08/21/luogu/P3391%20%E6%96%87%E8%89%BA%E5%B9%B3%E8%A1%A1%E6%A0%91/</url>
+    <title>SCOI2010 传送带</title>
+    <url>/2026/08/26/luogu/P2571%20%5BSCOI2010%5D%20%E4%BC%A0%E9%80%81%E5%B8%A6/</url>
     <content><![CDATA[]]></content>
       <categories>
         <category>算法</category>
       </categories>
       <tags>
-        <tag>平衡树</tag>
-        <tag>splay</tag>
-        <tag>文艺平衡树</tag>
+        <tag>三分</tag>
+        <tag>计算几何</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>TJOI2010 分金币 模拟退火/折半搜索</title>
+    <url>/2026/09/08/luogu/P3878%20%5BTJOI2010%5D%20%E5%88%86%E9%87%91%E5%B8%81/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>随机化</tag>
+        <tag>模拟退火</tag>
+        <tag>折半搜索</tag>
       </tags>
   </entry>
   <entry>
@@ -1035,52 +860,16 @@
       </tags>
   </entry>
   <entry>
-    <title>P4097 【模板】李超线段树 / [HEOI2013] Segment</title>
-    <url>/2026/07/06/luogu/P4097%20%E3%80%90%E6%A8%A1%E6%9D%BF%E3%80%91%E6%9D%8E%E8%B6%85%E7%BA%BF%E6%AE%B5%E6%A0%91/</url>
+    <title>GDOI2014 拯救莫莉斯</title>
+    <url>/2026/08/23/luogu/P3888%20%5BGDOI2014%5D%20%E6%8B%AF%E6%95%91%E8%8E%AB%E8%8E%89%E6%96%AF/</url>
     <content><![CDATA[]]></content>
       <categories>
         <category>算法</category>
       </categories>
       <tags>
-        <tag>线段树</tag>
-        <tag>数据结构</tag>
-        <tag>李超线段树</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>THUPC 2018 绿绿和串串</title>
-    <url>/2026/08/23/luogu/P5446%20%5BTHUPC%202018%5D%20%E7%BB%BF%E7%BB%BF%E5%92%8C%E4%B8%B2%E4%B8%B2/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>manacher</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>EVOI-RD1 无人机航拍</title>
-    <url>/2026/09/08/luogu/P7865%20%E3%80%8CEVOI-RD1%E3%80%8D%E6%97%A0%E4%BA%BA%E6%9C%BA%E8%88%AA%E6%8B%8D/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>二维差分</tag>
-        <tag>二维前缀和</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>TJOI2010 分金币 模拟退火/折半搜索</title>
-    <url>/2026/09/08/luogu/P3878%20%5BTJOI2010%5D%20%E5%88%86%E9%87%91%E5%B8%81/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>随机化</tag>
-        <tag>模拟退火</tag>
-        <tag>折半搜索</tag>
+        <tag>DP</tag>
+        <tag>状态压缩</tag>
+        <tag>状压DP</tag>
       </tags>
   </entry>
   <entry>
@@ -1098,6 +887,66 @@
       </tags>
   </entry>
   <entry>
+    <title>THUPC 2018 绿绿和串串</title>
+    <url>/2026/08/23/luogu/P5446%20%5BTHUPC%202018%5D%20%E7%BB%BF%E7%BB%BF%E5%92%8C%E4%B8%B2%E4%B8%B2/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>manacher</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CSP-S 2019 树的重心</title>
+    <url>/2026/08/26/luogu/P5666%20%5BCSP-S%202019%5D%20%E6%A0%91%E7%9A%84%E9%87%8D%E5%BF%83/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>树状数组</tag>
+        <tag>树的重心</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>P4097 【模板】李超线段树 / [HEOI2013] Segment</title>
+    <url>/2026/07/06/luogu/P4097%20%E3%80%90%E6%A8%A1%E6%9D%BF%E3%80%91%E6%9D%8E%E8%B6%85%E7%BA%BF%E6%AE%B5%E6%A0%91/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>线段树</tag>
+        <tag>数据结构</tag>
+        <tag>李超线段树</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>EVOI-RD1 无人机航拍</title>
+    <url>/2026/09/08/luogu/P7865%20%E3%80%8CEVOI-RD1%E3%80%8D%E6%97%A0%E4%BA%BA%E6%9C%BA%E8%88%AA%E6%8B%8D/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>二维差分</tag>
+        <tag>二维前缀和</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ynoi1999 XM66F</title>
+    <url>/2026/08/23/luogu/Ynoi1999%20XM66F/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>莫队</tag>
+        <tag>树状数组</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>P4867 Gty 的妹子序列</title>
     <url>/2026/08/22/luogu/P4867%20Gty%20%E7%9A%84%E5%A6%B9%E5%AD%90%E5%BA%8F%E5%88%97/</url>
     <content><![CDATA[]]></content>
@@ -1111,15 +960,15 @@
       </tags>
   </entry>
   <entry>
-    <title>Ynoi1999 XM66F</title>
-    <url>/2026/08/23/luogu/Ynoi1999%20XM66F/</url>
+    <title>TJOI2016 排序</title>
+    <url>/2026/08/23/luogu/TJOI2016%20%E6%8E%92%E5%BA%8F/</url>
     <content><![CDATA[]]></content>
       <categories>
         <category>算法</category>
       </categories>
       <tags>
-        <tag>莫队</tag>
-        <tag>树状数组</tag>
+        <tag>线段树</tag>
+        <tag>二分答案</tag>
       </tags>
   </entry>
   <entry>
@@ -1137,27 +986,15 @@
       </tags>
   </entry>
   <entry>
-    <title>TJOI2016 排序</title>
-    <url>/2026/08/23/luogu/TJOI2016%20%E6%8E%92%E5%BA%8F/</url>
+    <title>树的Prufer序列与父序列的相互转换</title>
+    <url>/2026/06/25/luogu/prufer%E5%BA%8F%E5%88%97%E6%A8%A1%E6%9D%BF/</url>
     <content><![CDATA[]]></content>
       <categories>
         <category>算法</category>
       </categories>
       <tags>
-        <tag>线段树</tag>
-        <tag>二分答案</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>CSP-S 2019 树的重心</title>
-    <url>/2026/08/26/luogu/P5666%20%5BCSP-S%202019%5D%20%E6%A0%91%E7%9A%84%E9%87%8D%E5%BF%83/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>树状数组</tag>
-        <tag>树的重心</tag>
+        <tag>图论</tag>
+        <tag>Prufer序列</tag>
       </tags>
   </entry>
   <entry>
@@ -1187,18 +1024,6 @@
       </tags>
   </entry>
   <entry>
-    <title>树的Prufer序列与父序列的相互转换</title>
-    <url>/2026/06/25/luogu/prufer%E5%BA%8F%E5%88%97%E6%A8%A1%E6%9D%BF/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>图论</tag>
-        <tag>Prufer序列</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>两道set启发式合并题</title>
     <url>/2026/09/06/luogu/%E4%B8%A4%E9%81%93set%E5%90%AF%E5%8F%91%E5%BC%8F%E5%90%88%E5%B9%B6%E9%A2%98/</url>
     <content><![CDATA[]]></content>
@@ -1207,32 +1032,6 @@
       </categories>
       <tags>
         <tag>启发式合并</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>【模板】带修莫队 / [国家集训队] 数颜色 / 维护队列</title>
-    <url>/2026/06/25/luogu/%E5%B8%A6%E4%BF%AE%E8%8E%AB%E9%98%9F%E6%A8%A1%E6%9D%BF/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>数据结构</tag>
-        <tag>分块</tag>
-        <tag>带修莫队</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>普通平衡树 (splay版本)</title>
-    <url>/2026/08/20/luogu/%E6%99%AE%E9%80%9A%E5%B9%B3%E8%A1%A1%E6%A0%91%20(splay%E7%89%88%E6%9C%AC)/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>数据结构</tag>
-        <tag>平衡树</tag>
-        <tag>splay</tag>
       </tags>
   </entry>
   <entry>
@@ -1249,6 +1048,32 @@
       </tags>
   </entry>
   <entry>
+    <title>普通平衡树 (splay版本)</title>
+    <url>/2026/08/20/luogu/%E6%99%AE%E9%80%9A%E5%B9%B3%E8%A1%A1%E6%A0%91%20(splay%E7%89%88%E6%9C%AC)/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>数据结构</tag>
+        <tag>平衡树</tag>
+        <tag>splay</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【模板】带修莫队 / [国家集训队] 数颜色 / 维护队列</title>
+    <url>/2026/06/25/luogu/%E5%B8%A6%E4%BF%AE%E8%8E%AB%E9%98%9F%E6%A8%A1%E6%9D%BF/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>数据结构</tag>
+        <tag>分块</tag>
+        <tag>带修莫队</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>P6136 【模板】普通平衡树（数据加强版）</title>
     <url>/2026/06/27/luogu/%E6%99%AE%E9%80%9A%E5%B9%B3%E8%A1%A1%E6%A0%91%E6%A8%A1%E6%9D%BF/</url>
     <content><![CDATA[]]></content>
@@ -1257,8 +1082,22 @@
       </categories>
       <tags>
         <tag>数据结构</tag>
-        <tag>平衡树</tag>
         <tag>PBDS</tag>
+        <tag>平衡树</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>树链剖分入门详解：把树上路径问题转成区间问题</title>
+    <url>/2026/03/13/luogu/%E6%A0%91%E9%93%BE%E5%89%96%E5%88%86%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>线段树</tag>
+        <tag>数据结构</tag>
+        <tag>图论</tag>
+        <tag>树链剖分</tag>
       </tags>
   </entry>
   <entry>
@@ -1288,20 +1127,6 @@
       </tags>
   </entry>
   <entry>
-    <title>树链剖分入门详解：把树上路径问题转成区间问题</title>
-    <url>/2026/03/13/luogu/%E6%A0%91%E9%93%BE%E5%89%96%E5%88%86%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>线段树</tag>
-        <tag>数据结构</tag>
-        <tag>图论</tag>
-        <tag>树链剖分</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>P13875 [蓝桥杯 2024 省研究生组] 植物生命力 题解</title>
     <url>/2026/03/15/luogu/%E6%A4%8D%E7%89%A9%E7%94%9F%E5%91%BD%E5%8A%9B%E9%A2%98%E8%A7%A3/</url>
     <content><![CDATA[]]></content>
@@ -1310,18 +1135,6 @@
       </categories>
       <tags>
         <tag>树上启发式合并</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>毒瘤珂朵莉题 P5350 序列</title>
-    <url>/2026/08/20/luogu/%E6%AF%92%E7%98%A4%E7%8F%82%E6%9C%B5%E8%8E%89%E9%A2%98%20P5350%20%E5%BA%8F%E5%88%97/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>数据结构</tag>
-        <tag>珂朵莉树</tag>
       </tags>
   </entry>
   <entry>
@@ -1336,6 +1149,18 @@
         <tag>数据结构</tag>
         <tag>树套树</tag>
         <tag>PBDS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>毒瘤珂朵莉题 P5350 序列</title>
+    <url>/2026/08/20/luogu/%E6%AF%92%E7%98%A4%E7%8F%82%E6%9C%B5%E8%8E%89%E9%A2%98%20P5350%20%E5%BA%8F%E5%88%97/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>数据结构</tag>
+        <tag>珂朵莉树</tag>
       </tags>
   </entry>
   <entry>
@@ -1364,15 +1189,72 @@
       </tags>
   </entry>
   <entry>
-    <title>CSAPP 虚拟内存</title>
-    <url>/2026/07/15/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/Virtual%20Memory/</url>
+    <title>网络最大流模板</title>
+    <url>/2026/08/19/luogu/%E7%BD%91%E7%BB%9C%E6%9C%80%E5%A4%A7%E6%B5%81%E6%A8%A1%E6%9D%BF/</url>
     <content><![CDATA[]]></content>
       <categories>
-        <category>计算机基础</category>
+        <category>算法</category>
       </categories>
       <tags>
-        <tag>虚拟内存</tag>
-        <tag>CSAPP</tag>
+        <tag>网络流</tag>
+        <tag>链式前向星</tag>
+        <tag>EK算法</tag>
+        <tag>Dinic</tag>
+        <tag>分层图</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Leetcode 2213. 由单个字符重复的最长子字符串</title>
+    <url>/2026/08/12/leetcode%E5%91%A8%E8%B5%9B/2213.%20%E7%94%B1%E5%8D%95%E4%B8%AA%E5%AD%97%E7%AC%A6%E9%87%8D%E5%A4%8D%E7%9A%84%E6%9C%80%E9%95%BF%E5%AD%90%E5%AD%97%E7%AC%A6%E4%B8%B2/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>线段树</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>LeetCode 179场双周赛</title>
+    <url>/2026/03/28/leetcode%E5%91%A8%E8%B5%9B/179%E5%9C%BA(%E5%8F%8C)/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>DP</tag>
+        <tag>前缀和</tag>
+        <tag>贪心</tag>
+        <tag>快速幂</tag>
+        <tag>bitset</tag>
+        <tag>模拟</tag>
+        <tag>组合数学</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>蓝桥杯 2023 省 A 颜色平衡树 线段树合并/树上启发式合并</title>
+    <url>/2026/08/25/luogu/%E8%93%9D%E6%A1%A5%E6%9D%AF%202023%20%E7%9C%81%20A%20%E9%A2%9C%E8%89%B2%E5%B9%B3%E8%A1%A1%E6%A0%91/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>线段树</tag>
+        <tag>动态开点线段树</tag>
+        <tag>线段树合并</tag>
+        <tag>树上启发式合并</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Leetcode 4003. 交替方向的最小路径代价 III</title>
+    <url>/2026/08/12/leetcode%E5%91%A8%E8%B5%9B/4003.%20%E4%BA%A4%E6%9B%BF%E6%96%B9%E5%90%91%E7%9A%84%E6%9C%80%E5%B0%8F%E8%B7%AF%E5%BE%84%E4%BB%A3%E4%BB%B7%20III/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>最短路</tag>
+        <tag>Dijkstra</tag>
       </tags>
   </entry>
   <entry>
@@ -1393,37 +1275,250 @@
       </tags>
   </entry>
   <entry>
-    <title>网络最大流模板</title>
-    <url>/2026/08/19/luogu/%E7%BD%91%E7%BB%9C%E6%9C%80%E5%A4%A7%E6%B5%81%E6%A8%A1%E6%9D%BF/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>网络流</tag>
-        <tag>链式前向星</tag>
-        <tag>EK算法</tag>
-        <tag>Dinic</tag>
-        <tag>分层图</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>蓝桥杯 2023 省 A 颜色平衡树 线段树合并/树上启发式合并</title>
-    <url>/2026/08/25/luogu/%E8%93%9D%E6%A1%A5%E6%9D%AF%202023%20%E7%9C%81%20A%20%E9%A2%9C%E8%89%B2%E5%B9%B3%E8%A1%A1%E6%A0%91/</url>
+    <title>Leetcode 4037.最多有效分割位置 II</title>
+    <url>/2026/08/31/leetcode%E5%91%A8%E8%B5%9B/4037.%20%E6%9C%80%E5%A4%9A%E6%9C%89%E6%95%88%E5%88%86%E5%89%B2%E4%BD%8D%E7%BD%AE%20II/</url>
     <content><![CDATA[]]></content>
       <categories>
         <category>算法</category>
       </categories>
       <tags>
         <tag>线段树</tag>
-        <tag>动态开点线段树</tag>
-        <tag>线段树合并</tag>
-        <tag>树上启发式合并</tag>
+        <tag>贪心</tag>
+        <tag>二分</tag>
       </tags>
   </entry>
   <entry>
-    <title>机器学习(周志华) 3.2 线性回归 正态方程/梯度下降 推导及deep-ml网站习题代码</title>
+    <title>Leetcode 4023.电梯请求 II</title>
+    <url>/2026/08/18/leetcode%E5%91%A8%E8%B5%9B/4023.%20%E7%94%B5%E6%A2%AF%E8%AF%B7%E6%B1%82%20II/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>DP</tag>
+        <tag>区间DP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>LeetCode 494场周赛 阿里云专场</title>
+    <url>/2026/03/22/leetcode%E5%91%A8%E8%B5%9B/494%E5%9C%BA/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>DP</tag>
+        <tag>位运算</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>图灵完备攻略 布尔代数</title>
+    <url>/2026/07/20/%E5%9B%BE%E7%81%B5%E5%AE%8C%E5%A4%87%E6%94%BB%E7%95%A5/%E5%9B%BE%E7%81%B5%E5%AE%8C%E5%A4%87%E6%94%BB%E7%95%A5%20%E5%B8%83%E5%B0%94%E4%BB%A3%E6%95%B0/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>计算机基础</category>
+      </categories>
+      <tags>
+        <tag>图灵完备攻略</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Leetcode 1563. 石子游戏 V</title>
+    <url>/2026/08/17/leetcode%E5%91%A8%E8%B5%9B/1563.%20%E7%9F%B3%E5%AD%90%E6%B8%B8%E6%88%8F%20V/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>区间DP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>LeetCode 511场周赛</title>
+    <url>/2026/07/25/leetcode%E5%91%A8%E8%B5%9B/511%E5%9C%BA/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>贪心</tag>
+        <tag>最小表示法</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>机器学习(周志华) 3.2 线性回归 正态方程/梯度下降 推导及 deep-ml 网站习题代码</title>
     <url>/2026/09/08/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%203.2%20%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%20%E6%AD%A3%E6%80%81%E6%96%B9%E7%A8%8B%20%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>人工智能</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+        <tag>线性回归</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>牛客周赛 Round 158 F</title>
+    <url>/2026/08/24/nowcoder/%E7%89%9B%E5%AE%A2%E5%91%A8%E8%B5%9B%20Round%20158%20F/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>矩阵快速幂</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>牛客练习赛156 D,E</title>
+    <url>/2026/09/01/nowcoder/%E7%89%9B%E5%AE%A2%E7%BB%83%E4%B9%A0%E8%B5%9B156/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>DP</tag>
+        <tag>状压DP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>LeetCode 495场周赛</title>
+    <url>/2026/03/29/leetcode%E5%91%A8%E8%B5%9B/495%E5%9C%BA/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>图论</tag>
+        <tag>并查集</tag>
+        <tag>模拟</tag>
+        <tag>带权并查集</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CSAPP 虚拟内存</title>
+    <url>/2026/07/15/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/Virtual%20Memory/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>计算机基础</category>
+      </categories>
+      <tags>
+        <tag>虚拟内存</tag>
+        <tag>CSAPP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>牛客小白月赛136 F 主席树/树上启发式合并</title>
+    <url>/2026/08/27/nowcoder/%E7%89%9B%E5%AE%A2%E5%B0%8F%E7%99%BD%E6%9C%88%E8%B5%9B136%20F/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>树上启发式合并</tag>
+        <tag>LCA</tag>
+        <tag>树链剖分</tag>
+        <tag>可持久化线段树</tag>
+        <tag>主席树</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>傅里叶级数的定理证明</title>
+    <url>/2026/07/23/%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90/%E5%82%85%E9%87%8C%E5%8F%B6%E7%BA%A7%E6%95%B0%E7%9A%84%E5%AE%9A%E7%90%86%E8%AF%81%E6%98%8E/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>数学</category>
+      </categories>
+      <tags>
+        <tag>傅里叶级数</tag>
+        <tag>数学分析</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Cache及其工作原理</title>
+    <url>/2026/07/18/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/Cache%E5%8F%8A%E5%85%B6%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>计算机基础</category>
+      </categories>
+      <tags>
+        <tag>计算机组成原理</tag>
+        <tag>Cache</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>中央处理器 AI做的一个小交互动画</title>
+    <url>/2026/08/12/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/%E4%B8%AD%E5%A4%AE%E5%A4%84%E7%90%86%E5%99%A8%20AI%E5%81%9A%E7%9A%84%E5%B0%8F%E4%BA%A4%E4%BA%92%E5%8A%A8%E7%94%BB/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>计算机基础</category>
+      </categories>
+      <tags>
+        <tag>计算机组成原理</tag>
+        <tag>中央处理器</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>指令系统的一些总结(2)</title>
+    <url>/2026/08/08/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/%E6%8C%87%E4%BB%A4%E7%B3%BB%E7%BB%9F(2)/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>计算机基础</category>
+      </categories>
+      <tags>
+        <tag>计算机组成原理</tag>
+        <tag>指令系统</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>主存与CPU的连接</title>
+    <url>/2026/09/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/%E4%B8%BB%E5%AD%98%E4%B8%8ECPU%E7%9A%84%E8%BF%9E%E6%8E%A5/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>计算机基础</category>
+      </categories>
+      <tags>
+        <tag>存储器</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>中央处理器——指令流水线</title>
+    <url>/2026/08/13/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/%E4%B8%AD%E5%A4%AE%E5%A4%84%E7%90%86%E5%99%A8%E2%80%94%E6%8C%87%E4%BB%A4%E6%B5%81%E6%B0%B4%E7%BA%BF/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>计算机基础</category>
+      </categories>
+      <tags>
+        <tag>计算机组成原理</tag>
+        <tag>中央处理器</tag>
+        <tag>指令流水线</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>指令系统的一些总结(1)</title>
+    <url>/2026/08/07/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/%E6%8C%87%E4%BB%A4%E7%B3%BB%E7%BB%9F(1)/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>计算机基础</category>
+      </categories>
+      <tags>
+        <tag>计算机组成原理</tag>
+        <tag>指令系统</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>恢复余数法除法运算器</title>
+    <url>/2026/08/21/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/%E6%81%A2%E5%A4%8D%E4%BD%99%E6%95%B0%E6%B3%95%E9%99%A4%E6%B3%95%E8%BF%90%E7%AE%97%E5%99%A8/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>计算机基础</category>
+      </categories>
+      <tags>
+        <tag>计算机组成原理</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>机器学习(周志华) 3.3-3.4 对数几率回归 线性判别分析</title>
+    <url>/2026/09/08/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%203.3-3.4%20%E5%AF%B9%E6%95%B0%E5%87%A0%E7%8E%87%E5%9B%9E%E5%BD%92%20%E7%BA%BF%E6%80%A7%E5%88%A4%E5%88%AB%E5%88%86%E6%9E%90/</url>
     <content><![CDATA[]]></content>
       <categories>
         <category>人工智能</category>
@@ -1449,15 +1544,15 @@
       </tags>
   </entry>
   <entry>
-    <title>机器学习(周志华) 3.3-3.4 对数几率回归 线性判别分析</title>
-    <url>/2026/09/08/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%203.3-3.4%20%E5%AF%B9%E6%95%B0%E5%87%A0%E7%8E%87%E5%9B%9E%E5%BD%92%20%E7%BA%BF%E6%80%A7%E5%88%A4%E5%88%AB%E5%88%86%E6%9E%90/</url>
+    <title>2025码蹄杯国赛第7题</title>
+    <url>/2026/07/05/%E7%A0%81%E8%B9%84%E9%9B%86/2025%E7%A0%81%E8%B9%84%E6%9D%AF%E5%9B%BD%E8%B5%9B%E7%AC%AC7%E9%A2%98/</url>
     <content><![CDATA[]]></content>
       <categories>
-        <category>人工智能</category>
+        <category>算法</category>
       </categories>
       <tags>
-        <tag>机器学习</tag>
-        <tag>线性回归</tag>
+        <tag>数论</tag>
+        <tag>莫比乌斯反演</tag>
       </tags>
   </entry>
   <entry>
@@ -1486,18 +1581,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Cache及其工作原理</title>
-    <url>/2026/07/18/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/Cache%E5%8F%8A%E5%85%B6%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>计算机基础</category>
-      </categories>
-      <tags>
-        <tag>计算机组成原理</tag>
-        <tag>Cache</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>2025百度之星决赛第十题 shopping</title>
     <url>/2026/08/19/%E7%A0%81%E8%B9%84%E9%9B%86/2025%E7%99%BE%E5%BA%A6%E4%B9%8B%E6%98%9F%E5%86%B3%E8%B5%9B%E7%AC%AC%E5%8D%81%E9%A2%98%20shopping/</url>
     <content><![CDATA[]]></content>
@@ -1510,29 +1593,6 @@
         <tag>SOS DP</tag>
         <tag>Floyd</tag>
         <tag>Held–Karp</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>2025码蹄杯国赛第7题</title>
-    <url>/2026/07/05/%E7%A0%81%E8%B9%84%E9%9B%86/2025%E7%A0%81%E8%B9%84%E6%9D%AF%E5%9B%BD%E8%B5%9B%E7%AC%AC7%E9%A2%98/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>数论</tag>
-        <tag>莫比乌斯反演</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>主存与CPU的连接</title>
-    <url>/2026/09/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/%E4%B8%BB%E5%AD%98%E4%B8%8ECPU%E7%9A%84%E8%BF%9E%E6%8E%A5/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>计算机基础</category>
-      </categories>
-      <tags>
-        <tag>存储器</tag>
       </tags>
   </entry>
   <entry>
@@ -1549,53 +1609,6 @@
         <tag>双指针</tag>
         <tag>区间DP</tag>
         <tag>二位前缀和</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>中央处理器 AI做的一个小交互动画</title>
-    <url>/2026/08/12/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/%E4%B8%AD%E5%A4%AE%E5%A4%84%E7%90%86%E5%99%A8%20AI%E5%81%9A%E7%9A%84%E5%B0%8F%E4%BA%A4%E4%BA%92%E5%8A%A8%E7%94%BB/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>计算机基础</category>
-      </categories>
-      <tags>
-        <tag>计算机组成原理</tag>
-        <tag>中央处理器</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>指令系统的一些总结(2)</title>
-    <url>/2026/08/08/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/%E6%8C%87%E4%BB%A4%E7%B3%BB%E7%BB%9F(2)/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>计算机基础</category>
-      </categories>
-      <tags>
-        <tag>计算机组成原理</tag>
-        <tag>指令系统</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>恢复余数法除法运算器</title>
-    <url>/2026/08/21/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/%E6%81%A2%E5%A4%8D%E4%BD%99%E6%95%B0%E6%B3%95%E9%99%A4%E6%B3%95%E8%BF%90%E7%AE%97%E5%99%A8/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>计算机基础</category>
-      </categories>
-      <tags>
-        <tag>计算机组成原理</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>指令系统的一些总结(1)</title>
-    <url>/2026/08/07/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/%E6%8C%87%E4%BB%A4%E7%B3%BB%E7%BB%9F(1)/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>计算机基础</category>
-      </categories>
-      <tags>
-        <tag>计算机组成原理</tag>
-        <tag>指令系统</tag>
       </tags>
   </entry>
   <entry>
@@ -1644,19 +1657,6 @@
       <tags>
         <tag>高等代数</tag>
         <tag>正交变换</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>中央处理器——指令流水线</title>
-    <url>/2026/08/13/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/%E4%B8%AD%E5%A4%AE%E5%A4%84%E7%90%86%E5%99%A8%E2%80%94%E6%8C%87%E4%BB%A4%E6%B5%81%E6%B0%B4%E7%BA%BF/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>计算机基础</category>
-      </categories>
-      <tags>
-        <tag>计算机组成原理</tag>
-        <tag>中央处理器</tag>
-        <tag>指令流水线</tag>
       </tags>
   </entry>
 </search>
