@@ -1,0 +1,62 @@
+/* 不改变其他侧栏卡片，只优化原最新文章卡片 */
+#aside-content .card-recent-post .item-headline {
+  position: relative;
+  padding-right: 32px;
+}
+
+#aside-content .card-recent-post .pz-random-refresh {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 27px;
+  height: 27px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--font-color);
+  cursor: pointer;
+  opacity: .65;
+  transition: background-color .2s, color .2s, opacity .2s;
+}
+
+#aside-content .card-recent-post .pz-random-refresh:hover {
+  background: var(--btn-bg, rgba(120, 140, 160, .15));
+  color: var(--theme-color);
+  opacity: 1;
+}
+
+#aside-content .card-recent-post .pz-random-refresh:focus-visible {
+  outline: 2px solid var(--theme-color);
+  outline-offset: 2px;
+}
+
+#aside-content .card-recent-post .pz-random-refresh.pz-random-loading i {
+  animation: pz-random-spin .7s linear infinite;
+}
+
+#aside-content .card-recent-post .pz-random-refresh:disabled {
+  cursor: wait;
+  opacity: .45;
+}
+
+#aside-content .card-recent-post .pz-random-empty {
+  padding: 12px 0;
+  font-size: 13px;
+  color: var(--font-color);
+  opacity: .65;
+}
+
+@keyframes pz-random-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #aside-content .card-recent-post .pz-random-refresh.pz-random-loading i {
+    animation: none;
+  }
+}
