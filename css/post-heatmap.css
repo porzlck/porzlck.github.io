@@ -73,14 +73,12 @@
   color: var(--font-color);
   opacity: .72;
 }
-#aside-content .pz-hm-archive { text-decoration: none; white-space: nowrap; }
+#aside-content .pz-hm-archive {
+  display: none;
+}
 #aside-content .pz-hm-archive:hover { opacity: 1; color: var(--theme-color); }
 #aside-content .pz-hm-legend {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 4px;
-  margin-top: 8px;
+  display: none;
 }
 #aside-content .pz-hm-legend-cell {
   display: inline-block;
