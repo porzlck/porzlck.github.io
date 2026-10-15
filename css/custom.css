@@ -99,3 +99,131 @@
     font-size: 13px;
   }
 }
+
+
+
+/* ===== 标签搜索框 ===== */
+
+#pz-tag-search {
+  max-width: 480px;
+  margin: 12px auto 28px;
+}
+
+/* 搜索框主体 */
+.pz-tag-search-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 12px 18px;
+  border: 1px solid #dce5f0;
+  border-radius: 14px;
+
+  background: var(--card-bg, #fff);
+  transition: border-color .2s, box-shadow .2s;
+}
+
+/* 获得焦点时 */
+.pz-tag-search-box:focus-within {
+  border-color: #49a6e9;
+  box-shadow: 0 0 0 3px rgba(73,166,233,.12);
+}
+
+/* 搜索图标 */
+.pz-tag-search-box i {
+  color: #8ba0b8;
+  font-size: 16px;
+}
+
+/* 输入框 */
+#pz-tag-search .pz-tag-input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  height: 28px;
+  padding: 0;
+
+  border: none;
+  outline: none;
+  box-shadow: none;
+  background: transparent;
+
+  color: var(--font-color);
+  font-size: 14px;
+}
+
+/* 清除浏览器自带的搜索叉号 */
+.pz-tag-input::-webkit-search-cancel-button {
+  display: none;
+}
+
+/* 清空按钮 */
+#pz-tag-search .pz-tag-clear {
+  padding: 0 5px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #8ba0b8;
+  font-size: 22px;
+}
+
+#pz-tag-search .pz-tag-clear:hover {
+  color: var(--theme-color);
+}
+
+/* 搜索结果数量 */
+.pz-tag-count {
+  margin-top: 9px;
+  text-align: right;
+  font-size: 12px;
+  color: #999;
+}
+
+/* 隐藏不匹配的标签 */
+#page .tag-cloud-list a.pz-tag-hidden {
+  display: none !important;
+}
+
+/* 无结果提示 */
+.pz-tag-empty {
+  text-align: center;
+  padding: 35px 0;
+  color: #999;
+  font-size: 14px;
+}
+
+.pz-tag-clear[hidden],
+.pz-tag-empty[hidden] {
+  display: none !important;
+}
+
+/* 深色模式 */
+[data-theme="dark"] .pz-tag-search-box {
+  border-color: #414754;
+}
+
+[data-theme="dark"] .pz-tag-search-box:focus-within {
+  border-color: #49a6e9;
+}
+
+/* 移动端 */
+@media (max-width: 768px) {
+  #pz-tag-search {
+    margin: 10px 0 22px;
+  }
+
+  .pz-tag-search-box {
+    padding: 10px 14px;
+  }
+}
+
+/* 隐藏标签搜索结果数量 */
+#pz-tag-search .pz-tag-count {
+  display: none !important;
+}
+
+/* 标签云左对齐，每行从左侧开始 */
+#page .tag-cloud-list {
+  text-align: left !important;
+  justify-content: flex-start !important;
+}
